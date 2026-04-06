@@ -1,0 +1,8 @@
+﻿<view class="container">
+  <view class="hero-card">
+    <view class="eyebrow">账号登录</view>
+    <view class="title">登录后才能保存进度、兑换码开通。</view>
+    <view class="subtitle">免费试练可以先不登录，但正式学习和完整版开通需要完成账号绑定。</view>
+    <button class="btn-primary mt-32" bindtap="handleLogin">微信一键登录（模拟）</button>
+  </view>
+</view>

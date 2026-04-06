@@ -1,0 +1,54 @@
+﻿{
+  "pages": [
+    "pages/landing/index",
+    "pages/dialect/index",
+    "pages/trial/index",
+    "pages/trial-result/index",
+    "pages/login/index",
+    "pages/bind-phone/index",
+    "pages/home/index",
+    "pages/levels/index",
+    "pages/lesson/index",
+    "pages/practice/index",
+    "pages/result/index",
+    "pages/weakness/index",
+    "pages/redeem/index",
+    "pages/profile/index",
+    "pages/contact/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "越南语发音教练",
+    "navigationBarBackgroundColor": "#F7F4EC",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#F4EFE3",
+    "backgroundTextStyle": "light"
+  },
+  "tabBar": {
+    "color": "#8E8168",
+    "selectedColor": "#103D34",
+    "backgroundColor": "#FFF9EE",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页",
+        "iconPath": "assets/icons/tab.png",
+        "selectedIconPath": "assets/icons/tab-active.png"
+      },
+      {
+        "pagePath": "pages/weakness/index",
+        "text": "薄弱项",
+        "iconPath": "assets/icons/tab.png",
+        "selectedIconPath": "assets/icons/tab-active.png"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的",
+        "iconPath": "assets/icons/tab.png",
+        "selectedIconPath": "assets/icons/tab-active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

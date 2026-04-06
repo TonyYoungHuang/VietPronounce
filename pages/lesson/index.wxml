@@ -1,0 +1,33 @@
+﻿<view class="container">
+  <view class="hero-card">
+    <view class="eyebrow">{{dialectLabel}} · {{levelName}}</view>
+    <view class="title">章节列表</view>
+    <view class="subtitle">已通过的内容可以随时回练，未达标的内容也可以先看后面的条目，但不会推动正式进度。</view>
+  </view>
+
+  <block wx:for="{{lessons}}" wx:key="id" wx:for-item="lesson">
+    <view class="panel">
+      <view class="row between">
+        <view>
+          <view class="section-title">{{lesson.title}}</view>
+          <view class="section-subtitle">{{lesson.summary}}</view>
+        </view>
+        <view class="badge">{{lesson.progress.passed}} / {{lesson.progress.total}}</view>
+      </view>
+      <view class="divider"></view>
+      <block wx:for="{{lesson.items}}" wx:key="id" wx:for-item="entry">
+        <view class="item-card list-item" data-item-id="{{entry.id}}" bindtap="openItem">
+          <view class="row between">
+            <view>
+              <view class="section-title" style="font-size: 30rpx;">{{entry.text}}</view>
+              <view class="section-subtitle">{{entry.translation}}</view>
+            </view>
+            <view class="{{entry.passed ? 'badge-success' : (entry.attempted ? 'badge-warn' : 'badge-muted')}}">{{entry.passed ? '已通过' : (entry.attempted ? '未达标' : '未练习')}}</view>
+          </view>
+          <view class="note">{{entry.type}}{{entry.attempted ? (' · 最近得分 ' + entry.total) : ''}}</view>
+        </view>
+      </block>
+    </view>
+  </block>
+  <view class="footer-space"></view>
+</view>

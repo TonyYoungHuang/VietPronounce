@@ -1,0 +1,50 @@
+﻿<view class="container">
+  <view class="hero-card">
+    <view class="eyebrow">当前体系 · {{dialectLabel}}</view>
+    <view class="title">{{unlocked ? '回到你的纠音主线。' : '先开通，再进入完整训练。'}}</view>
+    <view class="subtitle">{{unlocked ? '继续沿着等级路径推进，优先把当前不过关的内容练透。' : '你已经体验过它的纠音方式，现在可以联系顾问购买完整版并输入兑换码开通。'}}</view>
+    <button class="btn-primary mt-32" bindtap="goContinue">{{unlocked ? '继续学习' : '联系客服购买完整版'}}</button>
+  </view>
+
+  <view class="status-card">
+    <view class="row between">
+      <view>
+        <view class="section-title">账号状态</view>
+        <view class="section-subtitle">{{loggedIn ? '已登录' : '未登录'}} · {{hasPhone ? '已绑手机' : '未绑手机'}} · {{unlocked ? '已开通' : '未开通'}}</view>
+      </view>
+      <view class="{{unlocked ? 'badge-success' : 'badge-warn'}}">{{unlocked ? '完整版已开通' : '待开通'}}</view>
+    </view>
+    <view class="row gap-16 mt-24">
+      <view class="btn-inline" bindtap="goRedeem">输入兑换码</view>
+      <view class="btn-inline" bindtap="goContact">联系顾问</view>
+    </view>
+  </view>
+
+  <view class="path-card" wx:if="{{continueTarget}}">
+    <view class="section-title">继续学习</view>
+    <view class="section-subtitle">上次停在：{{continueTarget.text}} · {{continueTarget.translation}}</view>
+    <button class="btn-secondary mt-24" bindtap="goContinue">继续这条训练</button>
+  </view>
+
+  <view class="panel">
+    <view class="row between">
+      <view>
+        <view class="section-title">等级路径</view>
+        <view class="section-subtitle">零基础 -> 初级 -> 中等</view>
+      </view>
+      <view class="btn-inline" bindtap="goLevels">查看全部</view>
+    </view>
+    <block wx:for="{{levels}}" wx:key="id">
+      <view class="item-card">
+        <view class="row between">
+          <view>
+            <view class="section-title">{{item.name}}</view>
+            <view class="section-subtitle">{{item.subtitle}}</view>
+          </view>
+          <view class="badge-muted">{{item.progress.percent}}%</view>
+        </view>
+      </view>
+    </block>
+  </view>
+  <view class="footer-space"></view>
+</view>

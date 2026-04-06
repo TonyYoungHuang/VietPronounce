@@ -1,0 +1,31 @@
+﻿<view class="container">
+  <view class="hero-card">
+    <view class="eyebrow">免费试练 · {{dialect === 'north' ? '北越' : '南越'}}</view>
+    <view class="title">先读一条，看看它怎么纠正你。</view>
+    <view class="subtitle">这一条会完整展示评分结果与错误定位，帮助你判断产品是否值得继续深入。</view>
+  </view>
+
+  <view class="panel">
+    <view class="badge">{{item.type === 'sentence' ? '短句' : item.type}}</view>
+    <view class="title" style="font-size: 52rpx;">{{item.text}}</view>
+    <view class="section-subtitle">{{item.translation}}</view>
+    <view class="note">{{item.hint}}</view>
+    <view class="row gap-16 mt-24">
+      <view class="btn-inline" bindtap="playDemo">听标准音</view>
+      <view class="btn-inline" bindtap="replayRecord">听我的录音</view>
+    </view>
+  </view>
+
+  <view class="panel">
+    <view class="section-title">录音区</view>
+    <view class="section-subtitle">先听标准音，再模仿录音。录完后直接提交评分。</view>
+    <button class="{{recording ? 'btn-danger' : 'btn-primary'}} mt-24" bindtap="toggleRecording">{{recording ? '结束录音' : '开始录音'}}</button>
+    <button class="btn-ghost mt-16" bindtap="resetRecord" wx:if="{{hasRecording}}">删除并重录</button>
+    <view class="note" wx:if="{{hasRecording}}">已录音，可提交评分。</view>
+  </view>
+
+  <view class="cta-card">
+    <button class="btn-secondary" loading="{{scoreLoading}}" bindtap="submitTrial">提交评分</button>
+  </view>
+  <view class="footer-space"></view>
+</view>

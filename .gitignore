@@ -1,0 +1,6 @@
+node_modules/
+backend/storage/backups/
+backend/storage/users.json
+backend/storage/*.local.json
+.DS_Store
+Thumbs.db

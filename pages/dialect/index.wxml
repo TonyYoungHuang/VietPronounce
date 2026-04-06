@@ -1,0 +1,27 @@
+﻿<view class="container">
+  <view class="hero-card">
+    <view class="eyebrow">第 1 步</view>
+    <view class="title">先选一套发音体系。</view>
+    <view class="subtitle">后面的标准音、免费试练和正式训练都会跟随你当前的选择。购买后两套都能解锁，但进度互相独立。</view>
+  </view>
+
+  <block wx:for="{{dialects}}" wx:key="id">
+    <view class="item-card {{selectedDialect === item.id ? 'selected' : ''}}" data-dialect="{{item.id}}" bindtap="chooseDialect">
+      <view class="row between">
+        <view>
+          <view class="section-title">{{item.name}}</view>
+          <view class="section-subtitle">{{item.description}}</view>
+        </view>
+        <view class="{{selectedDialect === item.id ? 'badge' : 'badge-muted'}}">{{selectedDialect === item.id ? '当前已选' : '点选切换'}}</view>
+      </view>
+      <view class="row gap-16 mt-24">
+        <view class="btn-inline" data-dialect="{{item.id}}" catchtap="previewAudio">试听标准音</view>
+      </view>
+    </view>
+  </block>
+
+  <view class="cta-card">
+    <button class="btn-primary" bindtap="startTrial">开始免费试练</button>
+  </view>
+  <view class="footer-space"></view>
+</view>

@@ -1,0 +1,15 @@
+﻿<view class="container">
+  <view class="redeem-card">
+    <view class="section-title">输入兑换码开通完整版</view>
+    <view class="section-subtitle">开通后北越和南越两套体系都会解锁，但学习进度分别保存。</view>
+    <input class="input mt-24" placeholder="请输入兑换码" value="{{code}}" bindinput="handleInput" />
+    <button class="btn-primary mt-24" bindtap="submit">立即开通</button>
+    <button class="btn-ghost mt-16" bindtap="goContact">没拿到兑换码？联系客服</button>
+  </view>
+
+  <view class="panel" wx:if="{{message}}">
+    <view class="section-title">开通结果</view>
+    <view class="section-subtitle">{{message}}</view>
+    <button class="btn-secondary mt-24" wx:if="{{redeemed}}" bindtap="goHome">回首页继续学习</button>
+  </view>
+</view>

@@ -1,0 +1,29 @@
+﻿<view class="container" wx:if="{{item}}">
+  <view class="hero-card">
+    <view class="eyebrow">{{dialectLabel}} · {{item.type}}</view>
+    <view class="title">{{item.text}}</view>
+    <view class="subtitle">{{item.translation}}</view>
+    <view class="note">{{item.hint}}</view>
+    <view class="note" wx:if="{{lastScore}}">上次最近得分：{{lastScore}}</view>
+  </view>
+
+  <view class="panel">
+    <view class="section-title">先听，再模仿</view>
+    <view class="row gap-16 mt-24">
+      <view class="btn-inline" bindtap="playDemo">听标准音</view>
+      <view class="btn-inline" bindtap="replayRecord">听我的录音</view>
+    </view>
+  </view>
+
+  <view class="panel">
+    <view class="section-title">录音提交</view>
+    <view class="section-subtitle">不要求一遍就过，先录下来再看系统给你的定位。</view>
+    <button class="{{recording ? 'btn-danger' : 'btn-primary'}} mt-24" bindtap="toggleRecording">{{recording ? '结束录音' : '开始录音'}}</button>
+    <button class="btn-ghost mt-16" bindtap="resetRecord" wx:if="{{hasRecording}}">删除并重录</button>
+  </view>
+
+  <view class="cta-card">
+    <button class="btn-secondary" loading="{{loading}}" bindtap="submitPractice">提交评分</button>
+  </view>
+  <view class="footer-space"></view>
+</view>

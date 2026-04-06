@@ -1,0 +1,42 @@
+{
+  "north": {
+    "id": "north-trial-1",
+    "lessonId": "north-beginner-lesson-1",
+    "levelId": "beginner",
+    "type": "sentence",
+    "text": "xin chào",
+    "translation": "你好",
+    "hint": "近似：辛 招（仅作入门提示）",
+    "demoAudio": "/assets/audio/north-demo.wav",
+    "segments": [
+      {
+        "text": "xin",
+        "tip": "起音要更轻更细，摩擦感不要丢。"
+      },
+      {
+        "text": "chào",
+        "tip": "声调下落不够，尾音要更沉一点。"
+      }
+    ]
+  },
+  "south": {
+    "id": "south-trial-1",
+    "lessonId": "south-beginner-lesson-1",
+    "levelId": "beginner",
+    "type": "sentence",
+    "text": "xin chào",
+    "translation": "你好",
+    "hint": "近似：辛 赵（仅作入门提示）",
+    "demoAudio": "/assets/audio/south-demo.wav",
+    "segments": [
+      {
+        "text": "xin",
+        "tip": "首音可以更松一些，不要读得太硬。"
+      },
+      {
+        "text": "chào",
+        "tip": "南越版本更顺，尾部不要压得太死。"
+      }
+    ]
+  }
+}

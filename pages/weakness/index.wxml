@@ -1,0 +1,34 @@
+﻿<view class="container">
+  <view class="hero-card">
+    <view class="eyebrow">{{dialectLabel}} · 薄弱项复练</view>
+    <view class="title">把最容易掉分的地方先练透。</view>
+    <view class="subtitle">这里会优先汇总最近没过线，或者分数偏低的音节、词和短句。</view>
+  </view>
+
+  <view class="panel" wx:if="{{!unlocked}}">
+    <view class="empty">完整版开通后，这里会汇总你的薄弱项并支持集中复练。</view>
+    <button class="btn-primary" bindtap="goTrial">先去体验</button>
+  </view>
+
+  <view class="panel" wx:elif="{{items.length}}">
+    <block wx:for="{{items}}" wx:key="itemId" wx:for-item="weakItem">
+      <view class="item-card list-item" data-item-id="{{weakItem.itemId}}" bindtap="openItem">
+        <view class="row between">
+          <view>
+            <view class="section-title" style="font-size: 30rpx;">{{weakItem.text}}</view>
+            <view class="section-subtitle">{{weakItem.translation}}</view>
+          </view>
+          <view class="badge-warn">{{weakItem.total}} 分</view>
+        </view>
+        <block wx:for="{{weakItem.issueTexts}}" wx:key="*this" wx:for-item="issueText">
+          <view class="note">- {{issueText}}</view>
+        </block>
+      </view>
+    </block>
+  </view>
+
+  <view class="panel" wx:else>
+    <view class="empty">你现在还没有明显薄弱项。先去练几条，系统才会开始汇总你的常见问题。</view>
+  </view>
+  <view class="footer-space"></view>
+</view>

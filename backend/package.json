@@ -1,0 +1,10 @@
+﻿{
+  "name": "vietnamese-pronunciation-coach-backend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "File-based backend skeleton for the Vietnamese pronunciation coach mini program.",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node scripts/check-local.js && node scripts/check-score-adapter.js"
+  }
+}

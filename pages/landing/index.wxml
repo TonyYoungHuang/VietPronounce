@@ -1,0 +1,41 @@
+﻿<view class="container">
+  <view class="hero-card">
+    <view class="eyebrow">越南语 · 机器纠音训练器</view>
+    <view class="title">发音纠正，先比别人更准一步。</view>
+    <view class="subtitle">专注越南语发音纠正，北越 / 南越双体系，先试听、再跟读、再出分，零基础也能直接开始。</view>
+    <view class="metric-grid">
+      <view class="metric-card"><view class="metric-number">3s</view><view class="metric-label">目标评分返回</view></view>
+      <view class="metric-card"><view class="metric-number">2套</view><view class="metric-label">北越 / 南越体系</view></view>
+      <view class="metric-card"><view class="metric-number">3维</view><view class="metric-label">完整度 准确度 流利度</view></view>
+      <view class="metric-card"><view class="metric-number">0门槛</view><view class="metric-label">先试听再免费试练</view></view>
+    </view>
+    <view class="mt-32">
+      <button class="btn-primary" bindtap="goStart">立即体验</button>
+      <button class="btn-ghost mt-16" bindtap="goContact">了解完整版与购买方式</button>
+    </view>
+  </view>
+
+  <view class="panel">
+    <view class="section-title">为什么它像一位发音教练？</view>
+    <view class="section-subtitle">不是让你泛泛地练口语，而是把每一句拆开，让你知道错在哪里、为什么要重练。</view>
+    <view class="list-item mt-24">
+      <view class="badge">卖点 01</view>
+      <view class="section-subtitle">准确度优先：评分重点放在发音准不准，不是只给一个总分就结束。</view>
+    </view>
+    <view class="list-item">
+      <view class="badge">卖点 02</view>
+      <view class="section-subtitle">错误定位：原文高亮 + 列表说明，帮助你立刻知道哪个音节和声调需要修正。</view>
+    </view>
+    <view class="list-item">
+      <view class="badge">卖点 03</view>
+      <view class="section-subtitle">双体系：北越和南越完全分开训练，标准音与学习进度不会混在一起。</view>
+    </view>
+  </view>
+
+  <view class="cta-card">
+    <view class="section-title">体验路径</view>
+    <view class="section-subtitle">先选体系 -> 免费试练 -> 看完整结果 -> 联系客服购买 -> 兑换码开通完整版</view>
+    <button class="btn-secondary mt-24" bindtap="goStart">进入免费试练</button>
+  </view>
+  <view class="footer-space"></view>
+</view>

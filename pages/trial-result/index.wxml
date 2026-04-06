@@ -1,0 +1,43 @@
+﻿<view class="container" wx:if="{{trial}}">
+  <view class="hero-card">
+    <view class="eyebrow">{{dialectLabel}} · 完整试练结果</view>
+    <view class="title">{{trial.total}} 分</view>
+    <view class="subtitle">{{trial.passed ? '这条已经接近达标，但还能继续磨准确度。' : '这条还没达标，说明机器已经找到你最需要纠正的地方。'}}</view>
+  </view>
+
+  <view class="metric-grid">
+    <view class="metric-card"><view class="metric-number">{{trial.completeness}}</view><view class="metric-label">完整度</view></view>
+    <view class="metric-card"><view class="metric-number">{{trial.accuracy}}</view><view class="metric-label">准确度</view></view>
+    <view class="metric-card"><view class="metric-number">{{trial.fluency}}</view><view class="metric-label">流利度</view></view>
+    <view class="metric-card"><view class="metric-number">{{trial.passed ? '通过' : '重练'}}</view><view class="metric-label">本次状态</view></view>
+  </view>
+
+  <view class="issue-card">
+    <view class="section-title">错误定位</view>
+    <view class="segment-line">
+      <block wx:for="{{trial.segments}}" wx:key="text">
+        <view class="{{item.active ? 'segment-chip-error' : 'segment-chip'}}">{{item.text}}</view>
+      </block>
+    </view>
+    <block wx:for="{{trial.segments}}" wx:key="text">
+      <view class="list-item mt-24" wx:if="{{item.active}}">
+        <view class="badge-warn">重点纠正</view>
+        <view class="section-subtitle">{{item.tip}}</view>
+      </view>
+    </block>
+  </view>
+
+  <view class="panel">
+    <view class="section-title">对比重听</view>
+    <view class="row gap-16 mt-24">
+      <view class="btn-inline" bindtap="playDemo">听标准音</view>
+      <view class="btn-inline" bindtap="playRecord">听我的录音</view>
+    </view>
+  </view>
+
+  <view class="cta-card">
+    <button class="btn-primary" bindtap="goContact">联系客服了解完整版</button>
+    <button class="btn-ghost mt-16" bindtap="goLogin">登录并准备开通</button>
+  </view>
+  <view class="footer-space"></view>
+</view>

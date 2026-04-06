@@ -1,0 +1,22 @@
+﻿<view class="container">
+  <view class="hero-card">
+    <view class="eyebrow">{{dialectLabel}} 路径</view>
+    <view class="title">沿着等级一路往前推。</view>
+    <view class="subtitle">每一级都按从音到词到句子的顺序推进。你可以提前查看后面的内容，但只有达标才会计入正式进度。</view>
+  </view>
+
+  <block wx:for="{{levels}}" wx:key="id">
+    <view class="path-card">
+      <view class="row between">
+        <view>
+          <view class="section-title">{{item.name}}</view>
+          <view class="section-subtitle">{{item.subtitle}}</view>
+        </view>
+        <view class="badge">{{item.progress.passed}} / {{item.progress.total}}</view>
+      </view>
+      <view class="note">{{item.accent}} · {{item.lessonCount}} 个章节 · {{item.itemCount}} 条训练</view>
+      <button class="btn-primary mt-24" data-level-id="{{item.id}}" bindtap="openLevel">进入 {{item.name}}</button>
+    </view>
+  </block>
+  <view class="footer-space"></view>
+</view>

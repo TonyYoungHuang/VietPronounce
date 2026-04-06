@@ -1,0 +1,33 @@
+﻿<view class="container">
+  <view class="profile-card">
+    <view class="section-title">账号信息</view>
+    <view class="section-subtitle">{{auth.loggedIn ? '已登录' : '未登录'}} · {{auth.phone ? auth.phone : '未绑定手机号'}}</view>
+    <view class="note">昵称：{{auth.nickName || '发音练习访客'}}</view>
+    <button class="btn-primary mt-24" wx:if="{{!auth.loggedIn}}" bindtap="goLogin">立即登录</button>
+  </view>
+
+  <view class="panel">
+    <view class="section-title">当前产品状态</view>
+    <view class="section-subtitle">{{product.unlocked ? '完整版已开通，两个体系都可使用。' : '当前未开通完整版。'}}</view>
+    <view class="note">{{product.redeemedCode ? ('兑换码：' + product.redeemedCode) : '暂无兑换码记录'}}</view>
+    <view class="row gap-16 mt-24">
+      <view class="btn-inline" bindtap="goRedeem">兑换码开通</view>
+      <view class="btn-inline" bindtap="goContact">联系顾问</view>
+    </view>
+  </view>
+
+  <view class="panel">
+    <view class="section-title">发音体系</view>
+    <view class="section-subtitle">购买后北越和南越都能用，但两边的进度和成绩是分开的。</view>
+    <view class="row gap-16 mt-24">
+      <view class="btn-inline" data-dialect="north" bindtap="switchDialect">{{selectedDialect === 'north' ? '当前：北越' : '切到北越'}}</view>
+      <view class="btn-inline" data-dialect="south" bindtap="switchDialect">{{selectedDialect === 'south' ? '当前：南越' : '切到南越'}}</view>
+    </view>
+  </view>
+
+  <view class="panel">
+    <view class="section-title">学习入口</view>
+    <button class="btn-ghost mt-24" bindtap="goLevels">查看等级路径</button>
+  </view>
+  <view class="footer-space"></view>
+</view>

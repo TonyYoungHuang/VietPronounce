@@ -1,0 +1,1 @@
+﻿.selected { border-color: rgba(15, 91, 79, 0.22); background: linear-gradient(180deg, #fffaf0 0%, #edf8f3 100%); }
