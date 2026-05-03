@@ -1,1 +1,400 @@
-﻿
+.page-redeem__content {
+  padding-bottom: 220rpx;
+}
+
+.redeem-topbar {
+  justify-content: space-between;
+}
+
+.topbar-action--back {
+  font-size: 62rpx;
+  line-height: 1;
+}
+
+.redeem-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.redeem-hero {
+  padding-top: 20rpx;
+  text-align: center;
+}
+
+.redeem-title {
+  color: var(--primary);
+  font-size: 64rpx;
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.redeem-subtitle {
+  margin-top: 28rpx;
+  color: var(--on-surface-variant);
+  font-size: 30rpx;
+  line-height: 1.5;
+}
+
+.redeem-card {
+  position: relative;
+  margin-top: 96rpx;
+  padding: 72rpx 62rpx 58rpx;
+  overflow: hidden;
+}
+
+.redeem-card__line {
+  position: absolute;
+  top: 0;
+  left: 54rpx;
+  right: 54rpx;
+  height: 6rpx;
+  border-radius: 0 0 10rpx 10rpx;
+  background: #ffdcbc;
+}
+
+.redeem-label {
+  color: var(--on-surface);
+  font-size: 26rpx;
+  font-weight: 900;
+}
+
+.redeem-input {
+  margin-top: 26rpx;
+  text-align: center;
+  color: #476459;
+}
+
+.redeem-input__placeholder {
+  color: #b5c3ba;
+}
+
+.redeem-submit {
+  margin-top: 54rpx;
+  min-height: 124rpx;
+  font-size: 34rpx;
+  color: #ffffff;
+  background-color: #00875a;
+  background-image: linear-gradient(135deg, #006b47 0%, #00875a 100%);
+  box-shadow: 0 24rpx 46rpx rgba(0, 107, 71, 0.22);
+}
+
+.redeem-gate {
+  margin-top: 30rpx;
+  padding: 26rpx;
+  border-radius: 32rpx;
+  background: #fff4e9;
+}
+
+.redeem-gate__title {
+  color: #6b420f;
+  font-size: 28rpx;
+  font-weight: 900;
+}
+
+.redeem-gate__copy {
+  margin-top: 10rpx;
+  color: #6b420f;
+  font-size: 24rpx;
+  line-height: 1.55;
+}
+
+.redeem-terms {
+  margin-top: 52rpx;
+  color: rgba(62, 73, 66, 0.62);
+  font-size: 24rpx;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.redeem-message {
+  margin-top: 28rpx;
+  color: var(--primary);
+  font-size: 26rpx;
+  font-weight: 800;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.redeem-message--success {
+  color: #006b47;
+}
+
+.redeem-success-actions {
+  margin-top: 28rpx;
+}
+
+.redeem-home {
+  margin-top: 24rpx;
+}
+
+.redeem-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 102rpx;
+}
+
+.redeem-section__title {
+  color: var(--on-surface);
+  font-size: 42rpx;
+  font-weight: 900;
+}
+
+.redeem-section__badge {
+  min-height: 48rpx;
+  padding: 10rpx 28rpx;
+  border-radius: 999rpx;
+  color: var(--on-surface);
+  background: #ffdcbc;
+  font-size: 22rpx;
+  font-weight: 900;
+  letter-spacing: 2rpx;
+}
+
+.benefit-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 38rpx;
+  margin-top: 52rpx;
+}
+
+.benefit-card {
+  min-height: 284rpx;
+  padding: 50rpx 38rpx 34rpx;
+  border-radius: 40rpx;
+  box-shadow: inset 0 -4rpx 0 #dfcfb6;
+}
+
+.benefit-icon {
+  position: relative;
+  width: 78rpx;
+  height: 78rpx;
+  border-radius: 50%;
+  color: #895100;
+  background: #ffffff;
+  box-shadow: 0 8rpx 18rpx rgba(25, 28, 27, 0.08);
+}
+
+.benefit-icon::before,
+.benefit-icon::after {
+  content: '';
+  position: absolute;
+  background: currentColor;
+}
+
+.benefit-icon--globe::before {
+  left: 20rpx;
+  top: 20rpx;
+  width: 38rpx;
+  height: 38rpx;
+  border-radius: 50%;
+  background: transparent;
+  border: 5rpx solid currentColor;
+}
+
+.benefit-icon--globe::after {
+  left: 36rpx;
+  top: 18rpx;
+  width: 5rpx;
+  height: 42rpx;
+  border-radius: 4rpx;
+}
+
+.benefit-icon--voice::before {
+  left: 18rpx;
+  top: 31rpx;
+  width: 22rpx;
+  height: 18rpx;
+  border-radius: 6rpx;
+}
+
+.benefit-icon--voice::after {
+  right: 18rpx;
+  top: 22rpx;
+  width: 24rpx;
+  height: 34rpx;
+  border-radius: 0 24rpx 24rpx 0;
+  border-right: 7rpx solid currentColor;
+  background: transparent;
+}
+
+.benefit-icon--question::before {
+  left: 25rpx;
+  top: 18rpx;
+  width: 28rpx;
+  height: 28rpx;
+  border-radius: 50%;
+  background: transparent;
+  border: 6rpx solid currentColor;
+  border-bottom-color: transparent;
+}
+
+.benefit-icon--question::after {
+  left: 36rpx;
+  bottom: 18rpx;
+  width: 7rpx;
+  height: 7rpx;
+  border-radius: 50%;
+}
+
+.benefit-icon--minus::before {
+  left: 22rpx;
+  top: 36rpx;
+  width: 34rpx;
+  height: 7rpx;
+  border-radius: 7rpx;
+}
+
+.benefit-title {
+  margin-top: 52rpx;
+  color: var(--on-surface);
+  font-size: 28rpx;
+  font-weight: 900;
+  line-height: 1.22;
+}
+
+.benefit-subtitle {
+  margin-top: 10rpx;
+  color: var(--on-surface-variant);
+  font-size: 23rpx;
+  line-height: 1.45;
+}
+
+.redeem-quote {
+  position: relative;
+  height: 306rpx;
+  margin-top: 96rpx;
+  border-radius: 54rpx;
+  overflow: hidden;
+  box-shadow: var(--shadow-float);
+  background: linear-gradient(135deg, #0b2a1d 0%, #0b6b47 48%, #99c6a2 100%);
+}
+
+.redeem-quote__art {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 18% 24%, rgba(141, 247, 193, 0.5), transparent 20%),
+    radial-gradient(circle at 72% 14%, rgba(255, 255, 255, 0.22), transparent 18%),
+    radial-gradient(circle at 86% 72%, rgba(19, 61, 38, 0.86), transparent 26%);
+}
+
+.redeem-quote__mask {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.34));
+}
+
+.redeem-quote__text {
+  position: absolute;
+  left: 52rpx;
+  right: 52rpx;
+  bottom: 58rpx;
+  color: #ffffff;
+  font-size: 31rpx;
+  font-style: italic;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.redeem-dock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  height: 146rpx;
+  padding: 18rpx 72rpx 24rpx;
+  border-radius: 58rpx 58rpx 0 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 -16rpx 44rpx rgba(0, 107, 71, 0.08);
+}
+
+.redeem-dock__item {
+  width: 104rpx;
+  height: 104rpx;
+  border-radius: 52rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  color: #8fb0a6;
+}
+
+.redeem-dock__item--active {
+  color: #ffffff;
+  background: #00875a;
+  box-shadow: 0 18rpx 42rpx rgba(0, 107, 71, 0.24);
+}
+
+.redeem-dock__label {
+  font-size: 22rpx;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.dock-icon {
+  position: relative;
+  width: 34rpx;
+  height: 34rpx;
+  color: inherit;
+}
+
+.dock-icon::before,
+.dock-icon::after {
+  content: '';
+  position: absolute;
+  background: currentColor;
+}
+
+.dock-icon--home::before {
+  left: 4rpx;
+  top: 14rpx;
+  width: 26rpx;
+  height: 18rpx;
+  border-radius: 4rpx 4rpx 2rpx 2rpx;
+}
+
+.dock-icon--home::after {
+  left: 5rpx;
+  top: 2rpx;
+  width: 24rpx;
+  height: 24rpx;
+  border-radius: 3rpx;
+  transform: rotate(45deg);
+}
+
+.dock-icon--book::before,
+.dock-icon--book::after {
+  top: 4rpx;
+  width: 15rpx;
+  height: 26rpx;
+  border-radius: 3rpx 8rpx 8rpx 3rpx;
+  background: transparent;
+  border: 4rpx solid currentColor;
+}
+
+.dock-icon--book::before { left: 0; }
+.dock-icon--book::after { right: 0; transform: scaleX(-1); }
+
+.dock-icon--person::before {
+  left: 10rpx;
+  top: 2rpx;
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+}
+
+.dock-icon--person::after {
+  left: 4rpx;
+  bottom: 2rpx;
+  width: 26rpx;
+  height: 16rpx;
+  border-radius: 14rpx 14rpx 4rpx 4rpx;
+}

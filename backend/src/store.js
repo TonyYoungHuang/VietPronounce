@@ -1,4 +1,4 @@
-﻿const fs = require('fs');
+const fs = require('fs');
 const path = require('path');
 const { catalog, trialItems, redeemCodes } = require('../../data/mock');
 
@@ -95,7 +95,16 @@ function writeJson(name, value, options = {}) {
 }
 
 function readCatalog() {
-  return readJson('catalog');
+  const current = readJson('catalog') || {};
+  const next = { ...current };
+  let changed = false;
+  Object.keys(catalog).forEach((dialect) => {
+    if (!next[dialect]) {
+      next[dialect] = clone(catalog[dialect]);
+      changed = true;
+    }
+  });
+  return changed ? writeCatalog(next, { backup: true }) : current;
 }
 
 function writeCatalog(value, options) {
@@ -103,7 +112,16 @@ function writeCatalog(value, options) {
 }
 
 function readTrial() {
-  return readJson('trial');
+  const current = readJson('trial') || {};
+  const next = { ...current };
+  let changed = false;
+  Object.keys(trialItems).forEach((dialect) => {
+    if (!next[dialect]) {
+      next[dialect] = clone(trialItems[dialect]);
+      changed = true;
+    }
+  });
+  return changed ? writeTrial(next, { backup: true }) : current;
 }
 
 function writeTrial(value, options) {

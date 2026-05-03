@@ -1,10 +1,21 @@
-﻿{
+{
   "name": "vietnamese-pronunciation-coach-backend",
   "version": "0.1.0",
   "private": true,
   "description": "File-based backend skeleton for the Vietnamese pronunciation coach mini program.",
   "scripts": {
     "start": "node server.js",
-    "check": "node scripts/check-local.js && node scripts/check-score-adapter.js"
+    "check": "node scripts/check-curriculum-plan.js && node scripts/check-local.js && node scripts/check-score-adapter.js && node scripts/audit-release-content.js",
+    "trial:reset": "node scripts/reset-trial-content.js",
+    "content:reset": "node scripts/reset-release-content.js",
+    "audio:pack": "node scripts/build-audio-production-pack.js",
+    "audio:tts": "node scripts/generate-azure-tts-audio.js",
+    "audio:import": "node scripts/import-audio-assets.js",
+    "redeem:import": "node scripts/import-redeem-codes.js",
+    "content:generate": "node scripts/generate-expanded-curriculum.js",
+    "curriculum:check": "node scripts/check-curriculum-plan.js"
+  },
+  "dependencies": {
+    "ffmpeg-static": "^5.3.0"
   }
 }

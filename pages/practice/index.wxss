@@ -1,1 +1,60 @@
-﻿
+.practice-page { padding-bottom: 200rpx; }
+.practice-progress-head { display: flex; align-items: flex-end; justify-content: space-between; margin-top: 12rpx; }
+.practice-progress-head__label { font-size: 24rpx; color: var(--on-surface-variant); line-height: 1.4; }
+.practice-progress-head__value { font-size: 24px; font-weight: 900; color: var(--primary); }
+.practice-progress-bar { width: 100%; height: 18rpx; margin-top: 18rpx; border-radius: 999rpx; background: var(--surface-high); overflow: hidden; }
+.practice-progress-bar__value { height: 100%; border-radius: 999rpx; background-color: #00875a; background-image: linear-gradient(135deg, #006b47 0%, #00875a 100%); }
+.practice-card { position: relative; overflow: hidden; margin-top: 36rpx; padding: 52rpx 40rpx 44rpx; border-bottom: 6rpx solid #895100; text-align: center; }
+.practice-card__mark { position: absolute; right: -24rpx; top: 42rpx; width: 180rpx; height: 180rpx; border-radius: 50%; background: rgba(248, 250, 248, 0.64); color: rgba(255, 255, 255, 0.92); display: flex; align-items: center; justify-content: center; font-size: 68rpx; font-weight: 900; }
+.practice-card__text { position: relative; z-index: 1; font-size: 74rpx; line-height: 1.18; font-weight: 900; color: var(--on-surface); }
+.practice-card__guide { position: relative; z-index: 1; margin-top: 36rpx; font-size: 28rpx; line-height: 1.6; color: var(--secondary); font-weight: 700; }
+.practice-card__dots { display: flex; justify-content: center; gap: 12rpx; margin-top: 40rpx; }
+.practice-card__dot { width: 12rpx; height: 12rpx; border-radius: 50%; background: rgba(62, 73, 66, 0.14); }
+.practice-card__meaning { margin-top: 42rpx; padding: 30rpx 20rpx; border-radius: 999rpx; background: rgba(242, 244, 242, 0.8); }
+.practice-card__meaning-title { font-size: 22rpx; font-weight: 800; color: var(--on-surface-variant); letter-spacing: 2rpx; }
+.practice-card__meaning-copy { margin-top: 12rpx; font-size: 48rpx; font-weight: 900; line-height: 1.3; color: var(--on-surface); }
+.practice-audio-grid { display: grid; grid-template-columns: 1fr; gap: 18rpx; margin-top: 44rpx; }
+.practice-audio-card { width: 100%; box-sizing: border-box; margin: 0; padding: 20rpx 24rpx; border-radius: 34rpx; display: flex; align-items: center; gap: 18rpx; text-align: left; overflow: hidden; }
+.practice-audio-card > view:last-child { min-width: 0; flex: 1; }
+.practice-audio-card--slow { background: rgba(255, 244, 233, 0.82); }
+.small-play-button { flex: 0 0 88rpx; width: 88rpx; height: 88rpx; border-radius: 50%; background-color: #00875a; background-image: linear-gradient(135deg, #006b47 0%, #00875a 100%); color: #ffffff; font-size: 32rpx; font-weight: 900; box-shadow: 0 16rpx 32rpx rgba(0, 107, 71, 0.18); }
+.small-play-button--warm { background-color: #895100; background-image: linear-gradient(135deg, #895100 0%, #b97210 100%); font-size: 28rpx; }
+.practice-audio-card__label { font-size: 20rpx; letter-spacing: 2rpx; color: var(--on-surface-variant); font-weight: 800; }
+.practice-audio-card__title { margin-top: 8rpx; font-size: 30rpx; color: var(--on-surface); font-weight: 900; line-height: 1.25; }
+.syllable-coach { margin-top: 34rpx; padding: 34rpx 30rpx; overflow: hidden; }
+.syllable-coach__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 24rpx; }
+.syllable-coach__eyebrow { color: #895100; font-size: 22rpx; font-weight: 900; letter-spacing: 2rpx; }
+.syllable-coach__title { margin-top: 10rpx; color: var(--on-surface); font-size: 34rpx; font-weight: 900; line-height: 1.25; }
+.syllable-coach__count { flex: 0 0 auto; min-width: 88rpx; height: 54rpx; padding: 0 18rpx; border-radius: 999rpx; display: flex; align-items: center; justify-content: center; color: #006b47; background: rgba(0, 107, 71, 0.1); font-size: 22rpx; font-weight: 900; }
+.syllable-coach__list { display: grid; gap: 20rpx; margin-top: 28rpx; }
+.syllable-row { display: flex; gap: 20rpx; padding: 24rpx; border-radius: 34rpx; background: #f2f4f2; border: 2rpx solid transparent; box-sizing: border-box; overflow: hidden; }
+.syllable-row--active { border-color: rgba(0, 107, 71, 0.32); background: #ecf6f1; }
+.syllable-row__index { flex: 0 0 62rpx; width: 62rpx; height: 62rpx; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ffffff; background: #006b47; font-size: 22rpx; font-weight: 900; }
+.syllable-row__body { min-width: 0; flex: 1; }
+.syllable-row__text { color: var(--on-surface); font-size: 34rpx; font-weight: 900; line-height: 1.25; }
+.syllable-row__tip { margin-top: 10rpx; color: #3e4942; font-size: 24rpx; line-height: 1.55; }
+.syllable-row__actions { display: grid; grid-template-columns: 1fr; gap: 14rpx; margin-top: 18rpx; width: 100%; box-sizing: border-box; }
+.syllable-row__button { width: 100%; min-width: 0; min-height: 64rpx; margin: 0; padding: 0 20rpx; border-radius: 999rpx; display: flex; align-items: center; justify-content: center; color: #ffffff; background: #00875a; font-size: 24rpx; font-weight: 900; box-sizing: border-box; }
+.syllable-row__button--slow { color: #6b420f; background: #ffdcbc; }
+.syllable-coach__hint { margin-top: 24rpx; padding: 22rpx 24rpx; border-radius: 28rpx; color: #6b420f; background: #fff4e9; font-size: 24rpx; line-height: 1.6; }
+.practice-recorder { margin-top: 54rpx; text-align: center; padding-bottom: 24rpx; }
+.record-preflight { margin-bottom: 34rpx; padding: 26rpx 30rpx; border-radius: 34rpx; background: #fff4e9; text-align: left; }
+.record-preflight__title { color: #6b420f; font-size: 26rpx; font-weight: 900; }
+.record-preflight__copy { margin-top: 10rpx; color: #6b420f; font-size: 24rpx; line-height: 1.55; }
+.record-button { width: 220rpx; height: 220rpx; margin: 0 auto; border-radius: 50%; background-color: #00875a; background-image: linear-gradient(135deg, #006b47 0%, #00875a 100%); color: #ffffff; font-size: 70rpx; font-weight: 900; box-shadow: 0 28rpx 68rpx rgba(0, 107, 71, 0.22); display: flex; align-items: center; justify-content: center; }
+.record-button--active { background-color: #895100; background-image: linear-gradient(135deg, #895100 0%, #b97210 100%); color: #ffffff; box-shadow: 0 28rpx 68rpx rgba(137, 81, 0, 0.24); }
+.record-mic-icon { position: relative; width: 90rpx; height: 112rpx; }
+.record-mic-icon__head { position: absolute; left: 26rpx; top: 0; width: 38rpx; height: 62rpx; border-radius: 24rpx; background: #ffffff; box-shadow: inset 0 -10rpx 0 rgba(255, 255, 255, 0.2); }
+.record-mic-icon__arc { position: absolute; left: 12rpx; top: 36rpx; width: 66rpx; height: 48rpx; border: 8rpx solid #ffffff; border-top: 0; border-radius: 0 0 42rpx 42rpx; }
+.record-mic-icon__stem { position: absolute; left: 41rpx; top: 82rpx; width: 8rpx; height: 24rpx; border-radius: 999rpx; background: #ffffff; }
+.record-mic-icon__base { position: absolute; left: 24rpx; bottom: 0; width: 42rpx; height: 8rpx; border-radius: 999rpx; background: #ffffff; }
+.record-stop-icon { width: 70rpx; height: 70rpx; border-radius: 18rpx; background: #ffffff; box-shadow: 0 8rpx 20rpx rgba(25, 28, 27, 0.08); }
+.record-wave { height: 72rpx; margin-top: 22rpx; display: flex; align-items: center; justify-content: center; gap: 10rpx; opacity: 0.42; }
+.record-wave--active { opacity: 1; }
+.record-wave__bar { width: 14rpx; min-height: 14rpx; border-radius: 999rpx; background: #00875a; transition: height 0.16s ease; }
+.practice-recorder__title { margin-top: 28rpx; font-size: 54rpx; font-weight: 900; color: var(--on-surface); }
+.practice-recorder__hint { margin-top: 12rpx; color: #895100; font-size: 24rpx; font-weight: 800; }
+.practice-recorder__copy { margin-top: 16rpx; font-size: 28rpx; line-height: 1.7; color: var(--on-surface-variant); }
+.practice-recorder__actions { display: flex; gap: 16rpx; margin-top: 28rpx; }
+.practice-recorder__actions .btn-secondary,
+.practice-recorder__actions .btn-ghost { flex: 1; }

@@ -1,44 +1,132 @@
-﻿<view class="container" wx:if="{{result}}">
-  <view class="hero-card">
-    <view class="eyebrow">练习结果</view>
-    <view class="title">{{result.total}} 分</view>
-    <view class="subtitle">{{result.passed ? '这条已经过线，但准确度还能继续抬高。' : '这条还没过线，先围绕高亮部分继续重练。'}}</view>
+<view class="sanctuary-page result-page" wx:if="{{result}}">
+  <view class="topbar">
+    <view class="topbar-action result-back" bindtap="backLesson">‹</view>
+    <view class="topbar-spacer"></view>
+    <view class="topbar-action" bindtap="playDemo">▶</view>
   </view>
 
-  <view class="metric-grid">
-    <view class="metric-card"><view class="metric-number">{{result.completeness}}</view><view class="metric-label">完整度</view></view>
-    <view class="metric-card"><view class="metric-number">{{result.accuracy}}</view><view class="metric-label">准确度</view></view>
-    <view class="metric-card"><view class="metric-number">{{result.fluency}}</view><view class="metric-label">流利度</view></view>
-    <view class="metric-card"><view class="metric-number">{{result.passed ? '达标' : '未达标'}}</view><view class="metric-label">状态</view></view>
-  </view>
+  <view class="container topbar-offset result-page__content">
+    <view class="result-hero">
+      <view class="result-hero__halo"></view>
+      <view class="result-hero__leaf result-hero__leaf--top"></view>
+      <view class="result-hero__leaf result-hero__leaf--bottom"></view>
+      <view class="result-hero__score-card">
+        <view class="result-hero__score">{{result.total}}</view>
+        <view class="result-hero__label">TOTAL SCORE</view>
+      </view>
+    </view>
 
-  <view class="issue-card">
-    <view class="section-title">错误高亮</view>
-    <view class="segment-line">
-      <block wx:for="{{result.segments}}" wx:key="text">
-        <view class="{{item.active ? 'segment-chip-error' : 'segment-chip'}}">{{item.text}}</view>
+    <view class="result-headline">{{moodTitle}}</view>
+    <view class="result-subline">{{moodSub}}</view>
+    <view class="result-delta-chip">{{progressDeltaText}}</view>
+
+    <view class="surface-card result-next-card">
+      <view class="result-next-card__label">下一次目标</view>
+      <view class="result-next-card__title">{{nextTargetScore}} 分</view>
+      <view class="result-next-card__copy">本次最该重练：{{focusSegment ? focusSegment.text : result.itemText}}</view>
+      <view class="result-next-card__tip">{{focusSegment ? focusSegment.tip : '先听慢速范读，再录完整句。'}}</view>
+    </view>
+
+    <view class="surface-card result-segment-card">
+      <view class="result-segment-card__title">分段纠音</view>
+      <view class="result-segment-row">
+        <block wx:for="{{result.segments}}" wx:key="text">
+          <view
+            class="result-segment {{item.active ? 'result-segment--active' : ''}}"
+            data-tip="{{item.tip}}"
+            data-text="{{item.text}}"
+            bindtap="selectSegment"
+          >{{item.text}}</view>
+        </block>
+      </view>
+      <view class="result-segment-tip">
+        <view class="result-segment-tip__label">{{selectedSegmentText ? selectedSegmentText : '提示'}}</view>
+        <view class="result-segment-tip__copy">{{selectedSegmentTip}}</view>
+      </view>
+    </view>
+
+    <view class="result-metrics">
+      <block wx:for="{{metrics}}" wx:key="label">
+        <view class="surface-wrap result-metric-card result-metric-card--{{item.tone}}">
+          <view class="result-metric-card__top">
+            <view class="result-metric-card__title">{{item.label}}</view>
+            <view class="result-metric-card__icon">{{item.symbol}}</view>
+          </view>
+          <view class="result-metric-card__value">{{item.value}}<text>%</text></view>
+          <view class="result-metric-card__bar">
+            <view class="result-metric-card__fill" style="width: {{item.value}}%;"></view>
+          </view>
+        </view>
       </block>
     </view>
-    <block wx:for="{{result.segments}}" wx:key="text">
-      <view class="list-item mt-24" wx:if="{{item.active}}">
-        <view class="badge-warn">需要修正</view>
-        <view class="section-subtitle">{{item.tip}}</view>
-      </view>
-    </block>
-  </view>
 
-  <view class="panel">
-    <view class="section-title">对比播放</view>
-    <view class="row gap-16 mt-24">
-      <view class="btn-inline" bindtap="playDemo">听标准音</view>
-      <view class="btn-inline" bindtap="playRecord">听我的录音</view>
+    <view class="result-dimensions" wx:if="{{pronunciationDimensions.length}}">
+      <view class="section-head result-dimensions__head">
+        <view class="section-title">越南语专项纠音</view>
+        <view class="section-link">点击复练</view>
+      </view>
+      <block wx:for="{{pronunciationDimensions}}" wx:key="key">
+        <view class="surface-wrap result-dimension-card result-dimension-card--{{item.key}}" data-focus="{{item.key}}" bindtap="retryDimension">
+          <view class="result-dimension-card__top">
+            <view>
+              <view class="result-dimension-card__label">{{item.label}}</view>
+              <view class="result-dimension-card__focus">{{item.focus}}</view>
+            </view>
+            <view class="result-dimension-card__score">{{item.score}}</view>
+          </view>
+          <view class="result-dimension-card__bar">
+            <view class="result-dimension-card__fill" style="width: {{item.score}}%;"></view>
+          </view>
+          <view class="result-dimension-card__tip">{{item.tip}}</view>
+        </view>
+      </block>
+    </view>
+
+    <view class="surface-card result-repeat-card">
+      <view class="result-repeat-card__title">推荐重练 3 遍</view>
+      <block wx:for="{{repeatPlan}}" wx:key="label">
+        <view class="result-repeat-step">
+          <view class="result-repeat-step__label">{{item.label}}</view>
+          <view class="result-repeat-step__text">{{item.text}}</view>
+        </view>
+      </block>
+    </view>
+
+    <view class="result-attempts" wx:if="{{attemptHistory.length}}">
+      <view class="section-head result-attempts__head">
+        <view class="section-title">最近 5 次</view>
+        <view class="section-link">进步轨迹</view>
+      </view>
+      <view class="surface-wrap result-attempts__panel">
+        <block wx:for="{{attemptHistory}}" wx:key="practicedAt">
+          <view class="result-attempt">
+            <view class="result-attempt__score">{{item.total}}</view>
+            <view class="result-attempt__label">{{item.label}}</view>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <view class="result-tip-card">
+      <view class="result-tip-card__label">发音反馈</view>
+      <view class="result-tip-card__title">本次纠音提示</view>
+      <block wx:if="{{issueTips.length}}">
+        <block wx:for="{{issueTips}}" wx:key="*this">
+          <view class="result-tip-card__item">{{index + 1}}. {{item}}</view>
+        </block>
+      </block>
+      <view class="result-tip-card__item" wx:else>这一句已经基本过线，下一步继续保持稳定的调值和停连。</view>
+      <view class="result-tip-card__stamp"></view>
+    </view>
+
+    <view class="result-audio-row">
+      <button class="btn-secondary" bindtap="playDemo"><view class="btn-glyph btn-glyph--play"></view><text>听标准音</text></button>
+      <button class="btn-ghost" bindtap="playRecord"><view class="btn-glyph btn-glyph--record"></view><text>听我的录音</text></button>
     </view>
   </view>
 
-  <view class="cta-card">
-    <button class="btn-primary" bindtap="retry">立即重练</button>
-    <button class="btn-ghost mt-16" bindtap="nextItem">查看下一条（不一定记进度）</button>
-    <button class="btn-ghost mt-16" bindtap="backLesson">返回章节列表</button>
+  <view class="result-action-bar">
+    <button class="result-action result-action--ghost" bindtap="retry">再试一次</button>
+    <button class="result-action result-action--primary" bindtap="nextItem">{{nextItemId ? '继续下一句' : '返回章节'}}</button>
   </view>
-  <view class="footer-space"></view>
 </view>

@@ -1,8 +1,14 @@
-﻿const store = require('../../utils/store');
+const store = require('../../utils/store');
+const { getDemoAudioUrl } = require('../../services/demo-audio');
 const { scoreFixedContent } = require('../../services/score');
 const { syncTrial } = require('../../services/content-sync');
+const { validateRecordingQuality } = require('../../utils/audio-quality');
+const { prepareGuidedSegments } = require('../../utils/content-audio');
+const { ensureServiceReadyForScoring } = require('../../utils/startup-check');
+const { getOfflineNotice } = require('../../utils/network-status');
+const { attachShare } = require('../../utils/share');
 
-Page({
+Page(attachShare({
   data: {
     dialect: 'north',
     item: null,
@@ -10,54 +16,238 @@ Page({
     recording: false,
     recordingDuration: 0,
     tempFilePath: '',
-    scoreLoading: false
+    scoreLoading: false,
+    progressPercent: 100,
+    progressLabel: '免费试练 · 第 1/1 条',
+    guideText: '',
+    guidedSegments: [],
+    activeSegmentIndex: 0,
+    activeSegmentTip: '',
+    offlineNotice: '',
+    preflightText: '找一个安静环境，手机距离嘴部约 15-20 厘米。',
+    countdown: 0,
+    volumeBars: [18, 30, 22, 36, 24],
+    recordingHint: '按住录音，松开结束'
   },
 
   async onLoad(query) {
     const dialect = query.dialect || store.getState().selectedDialect || 'north';
     try {
       await syncTrial(dialect);
-    } catch (error) {
-      // keep local fallback
-    }
+    } catch (error) {}
 
     const context = store.createTrialAttempt(dialect);
     this.trialContext = context;
     store.setSelectedDialect(dialect);
-    this.setData({ dialect, item: context.item });
+    const guidedSegments = prepareGuidedSegments(context.item);
+    this.setData({
+      dialect,
+      item: context.item,
+      guideText: context.item.hint || '先听标准音，再开始跟读。',
+      guidedSegments,
+      activeSegmentIndex: 0,
+      activeSegmentTip: guidedSegments[0] ? guidedSegments[0].tip : '',
+      offlineNotice: getOfflineNotice()
+    });
 
     this.recorderManager = wx.getRecorderManager();
     this.audio = wx.createInnerAudioContext();
     this.recordAudio = wx.createInnerAudioContext();
     this.recorderManager.onStop((res) => {
-      this.setData({
-        hasRecording: true,
-        recording: false,
-        tempFilePath: res.tempFilePath,
-        recordingDuration: res.duration || 1800
-      });
+      this.recordTouchActive = false;
+      this.stopRecordingBars();
+      this.setData({ hasRecording: true, recording: false, tempFilePath: res.tempFilePath, recordingDuration: res.duration || 1800 });
       wx.showToast({ title: '录音完成', icon: 'none' });
+    });
+    this.recorderManager.onError(() => {
+      this.recordTouchActive = false;
+      this.stopRecordingBars();
+      this.setData({ recording: false, recordingHint: '录音中断，请重新按住录音' });
+      wx.showToast({ title: '录音中断，请重试', icon: 'none' });
     });
   },
 
   playDemo() {
-    this.audio.src = this.data.item.demoAudio;
+    this.playAudioSource(this.data.item.demoAudio, this.data.item.fallbackDemoAudio, { rate: 1, mode: 'normal', text: this.data.item.text });
+  },
+
+  playSlowDemo() {
+    this.playAudioSource(this.data.item.slowDemoAudio || this.data.item.demoAudio, this.data.item.fallbackDemoAudio || this.data.item.demoAudio, { rate: 0.78, mode: 'slow', text: this.data.item.text });
+  },
+
+  playSegment(event) {
+    const index = Number(event.currentTarget.dataset.index || 0);
+    const segment = this.data.guidedSegments[index];
+    if (!segment) return;
+    this.setData({ activeSegmentIndex: index, activeSegmentTip: segment.tip });
+    this.playAudioSource(segment.demoAudio, segment.fallbackDemoAudio || this.data.item.fallbackDemoAudio || this.data.item.demoAudio, { rate: 1, mode: 'normal', text: segment.text });
+  },
+
+  playSlowSegment(event) {
+    const index = Number(event.currentTarget.dataset.index || 0);
+    const segment = this.data.guidedSegments[index];
+    if (!segment) return;
+    this.setData({ activeSegmentIndex: index, activeSegmentTip: segment.tip });
+    this.playAudioSource(segment.slowDemoAudio || segment.demoAudio, segment.fallbackDemoAudio || this.data.item.fallbackDemoAudio || this.data.item.demoAudio, { rate: 0.78, mode: 'slow', text: segment.text });
+  },
+
+  playAudioSource(primary, fallback, options = {}) {
+    if (!this.audio) return;
+    const generatedSource = options.text ? getDemoAudioUrl({
+      text: options.text,
+      dialect: this.data.dialect,
+      mode: options.mode
+    }) : '';
+    const source = generatedSource || primary || fallback;
+    if (!source) {
+      wx.showToast({ title: '范读音频待补充', icon: 'none' });
+      return;
+    }
+
+    if (this.audio.offError && this.audioErrorHandler) {
+      this.audio.offError(this.audioErrorHandler);
+    }
+
+    const fallbackSource = generatedSource ? '' : (primary && primary !== source ? primary : (fallback && fallback !== source ? fallback : ''));
+    this.audioErrorHandler = () => {
+      if (fallbackSource) {
+        this.audio.src = fallbackSource;
+        try {
+          this.audio.playbackRate = options.rate || 1;
+        } catch (error) {}
+        this.audio.play();
+        wx.showToast({ title: '使用临时范读音频', icon: 'none' });
+        return;
+      }
+      wx.showToast({ title: '范读音频待补充', icon: 'none' });
+    };
+
+    if (this.audio.onError) {
+      this.audio.onError(this.audioErrorHandler);
+    }
+    this.audio.stop();
+    try {
+      this.audio.playbackRate = options.rate || 1;
+    } catch (error) {}
+    this.audio.src = source;
     this.audio.play();
   },
 
-  toggleRecording() {
-    if (this.data.recording) {
-      this.recorderManager.stop();
+  ensureRecordPermission(callback) {
+    wx.authorize({ scope: 'scope.record', success: callback, fail: () => wx.showToast({ title: '请先授权麦克风', icon: 'none' }) });
+  },
+
+  animateRecordingBars() {
+    this.stopRecordingBars();
+    this.waveTimer = setInterval(() => {
+      const bars = [0, 1, 2, 3, 4].map((_, index) => 18 + Math.round(Math.random() * 34) + (index % 2 ? 8 : 0));
+      this.setData({ volumeBars: bars });
+    }, 180);
+  },
+
+  stopRecordingBars() {
+    if (this.waveTimer) {
+      clearInterval(this.waveTimer);
+      this.waveTimer = null;
+    }
+  },
+
+  beginRecorder() {
+    if (this.data.recording) return;
+    this.recorderManager.start({
+      duration: 10000,
+      sampleRate: 16000,
+      numberOfChannels: 1,
+      encodeBitRate: 48000,
+      format: 'mp3'
+    });
+    this.animateRecordingBars();
+    this.setData({ recording: true, countdown: 0, recordingHint: '正在录音，保持音量稳定' });
+  },
+
+  async startHoldRecord() {
+    this.recordTouchActive = true;
+    this.setData({ recordingHint: '正在准备录音，请按住不放' });
+    const directReady = await ensureServiceReadyForScoring();
+    if (!directReady.ok) {
+      this.recordTouchActive = false;
+      wx.showToast({ title: directReady.message, icon: 'none' });
       return;
     }
-    wx.authorize({
-      scope: 'scope.record',
-      success: () => {
-        this.recorderManager.start({ duration: 10000, format: 'mp3' });
-        this.setData({ recording: true });
-      },
-      fail: () => wx.showToast({ title: '请先授权麦克风', icon: 'none' })
+    this.ensureRecordPermission(() => {
+      if (!this.recordTouchActive || this.data.recording) return;
+      this.beginRecorder();
     });
+    return;
+
+    const ready = await ensureServiceReadyForScoring();
+    if (!ready.ok) {
+      wx.showToast({ title: ready.message, icon: 'none' });
+      return;
+    }
+    this.ensureRecordPermission(() => {
+      if (this.data.recording || this.countdownTimer) return;
+      this.setData({ countdown: 3, recordingHint: '倒计时后开始录音' });
+      this.countdownTimer = setInterval(() => {
+        const next = this.data.countdown - 1;
+        if (next <= 0) {
+          clearInterval(this.countdownTimer);
+          this.countdownTimer = null;
+          this.beginRecorder();
+          return;
+        }
+        this.setData({ countdown: next });
+      }, 650);
+    });
+  },
+
+  stopHoldRecord() {
+    this.recordTouchActive = false;
+    if (!this.data.recording) {
+      this.setData({ recordingHint: '按住录音，松开结束' });
+      return;
+    }
+    this.recorderManager.stop();
+    this.stopRecordingBars();
+    return;
+
+    if (this.countdownTimer) {
+      clearInterval(this.countdownTimer);
+      this.countdownTimer = null;
+      this.setData({ countdown: 0, recordingHint: '准备好后长按开始跟读' });
+      return;
+    }
+    if (this.data.recording) this.recorderManager.stop();
+    this.stopRecordingBars();
+  },
+
+  async startHoldRecord() {
+    this.recordTouchActive = true;
+    this.setData({ recordingHint: '正在准备录音，请按住不放' });
+    const ready = await ensureServiceReadyForScoring();
+    if (!ready.ok) {
+      this.recordTouchActive = false;
+      wx.showToast({ title: ready.message, icon: 'none' });
+      return;
+    }
+    this.ensureRecordPermission(() => {
+      if (!this.recordTouchActive || this.data.recording) return;
+      this.beginRecorder();
+    });
+  },
+
+  stopHoldRecord() {
+    this.recordTouchActive = false;
+    if (!this.data.recording) {
+      this.setData({ recordingHint: '按住录音，松开结束' });
+      return;
+    }
+    this.recorderManager.stop();
+    this.stopRecordingBars();
+  },
+
+  showRecordHint() {
+    wx.showToast({ title: this.data.recording ? '松开即可结束录音' : '长按开始录音', icon: 'none' });
   },
 
   replayRecord() {
@@ -70,7 +260,7 @@ Page({
   },
 
   resetRecord() {
-    this.setData({ hasRecording: false, tempFilePath: '', recordingDuration: 0 });
+    this.setData({ hasRecording: false, tempFilePath: '', recordingDuration: 0, recording: false });
   },
 
   async submitTrial() {
@@ -79,16 +269,30 @@ Page({
       return;
     }
 
+    const ready = await ensureServiceReadyForScoring();
+    if (!ready.ok) {
+      wx.showToast({ title: ready.message, icon: 'none' });
+      return;
+    }
+
+    try {
+      const quality = await validateRecordingQuality({
+        filePath: this.data.tempFilePath,
+        durationMs: this.data.recordingDuration
+      }, this.data.item);
+      if (!quality.ok) {
+        wx.showToast({ title: quality.message, icon: 'none' });
+        return;
+      }
+    } catch (error) {
+      wx.showToast({ title: '无法读取录音文件，请重新录制。', icon: 'none' });
+      return;
+    }
+
     this.setData({ scoreLoading: true });
     try {
-      const score = await scoreFixedContent(this.trialContext, {
-        audioFilePath: this.data.tempFilePath,
-        durationMs: this.data.recordingDuration || 2000
-      });
-      store.persistTrialScore(this.data.dialect, this.trialContext, {
-        ...score,
-        recordAudio: this.data.tempFilePath
-      });
+      const score = await scoreFixedContent(this.trialContext, { audioFilePath: this.data.tempFilePath, durationMs: this.data.recordingDuration || 2000 });
+      store.persistTrialScore(this.data.dialect, this.trialContext, { ...score, recordAudio: this.data.tempFilePath });
       this.setData({ scoreLoading: false });
       wx.navigateTo({ url: '/pages/trial-result/index' });
     } catch (error) {
@@ -97,8 +301,27 @@ Page({
     }
   },
 
+  closePage() {
+    wx.navigateBack({ fail: () => wx.redirectTo({ url: '/pages/dialect/index' }) });
+  },
+
+  stopRecordingIfNeeded() {
+    this.recordTouchActive = false;
+    if (this.data.recording && this.recorderManager) {
+      this.recorderManager.stop();
+    }
+    this.stopRecordingBars();
+  },
+
+  onHide() {
+    this.stopRecordingIfNeeded();
+  },
+
   onUnload() {
+    this.stopRecordingIfNeeded();
+    if (this.countdownTimer) clearInterval(this.countdownTimer);
+    this.stopRecordingBars();
     if (this.audio) this.audio.destroy();
     if (this.recordAudio) this.recordAudio.destroy();
   }
-});
+}, { path: '/pages/landing/index?from=share' }));

@@ -1,15 +1,68 @@
-﻿<view class="container">
-  <view class="redeem-card">
-    <view class="section-title">输入兑换码开通完整版</view>
-    <view class="section-subtitle">开通后北越和南越两套体系都会解锁，但学习进度分别保存。</view>
-    <input class="input mt-24" placeholder="请输入兑换码" value="{{code}}" bindinput="handleInput" />
-    <button class="btn-primary mt-24" bindtap="submit">立即开通</button>
-    <button class="btn-ghost mt-16" bindtap="goContact">没拿到兑换码？联系客服</button>
+<view class="sanctuary-page page-redeem">
+  <view class="topbar redeem-topbar">
+    <view class="topbar-action topbar-action--back" bindtap="goBack">‹</view>
+    <view class="topbar-spacer"></view>
+    <view class="redeem-top-actions">
+      <view class="topbar-action" bindtap="goContact">?</view>
+      <view class="avatar-shell" bindtap="goProfile">
+        <view class="avatar-shell__core">V</view>
+      </view>
+    </view>
   </view>
 
-  <view class="panel" wx:if="{{message}}">
-    <view class="section-title">开通结果</view>
-    <view class="section-subtitle">{{message}}</view>
-    <button class="btn-secondary mt-24" wx:if="{{redeemed}}" bindtap="goHome">回首页继续学习</button>
+  <view class="container topbar-offset page-redeem__content">
+    <view class="redeem-hero">
+      <view class="redeem-title">激活高级课程</view>
+      <view class="redeem-subtitle">开通后即可进入完整的北越与南越训练路径。</view>
+    </view>
+
+    <view class="surface-card redeem-card">
+      <view class="redeem-card__line"></view>
+      <view class="redeem-label">请输入兑换码</view>
+      <input
+        class="input redeem-input"
+        placeholder="EX: VER-GOLD-2024"
+        placeholder-class="redeem-input__placeholder"
+        value="{{code}}"
+        bindinput="handleInput"
+      />
+
+      <view class="redeem-gate" wx:if="{{needLogin || needPhone}}">
+        <view class="redeem-gate__title">{{needLogin ? '请先登录账号' : '请先绑定手机号'}}</view>
+        <view class="redeem-gate__copy">{{needLogin ? '登录后才能识别课程权益并保存开通记录。' : '绑定手机号后，兑换码权益会更稳定地关联到当前账号。'}}</view>
+        <button class="btn-secondary mt-24" wx:if="{{needLogin}}" bindtap="goLogin">去登录</button>
+        <button class="btn-secondary mt-24" wx:if="{{needPhone}}" bindtap="goBindPhone">去绑定手机号</button>
+      </view>
+
+      <button class="btn-primary redeem-submit" loading="{{loading}}" disabled="{{loading || needLogin || needPhone}}" bindtap="submit">立即激活</button>
+      <view class="redeem-terms">激活后，课程权益会记录到当前账号。</view>
+      <view class="redeem-message {{redeemed ? 'redeem-message--success' : ''}}" wx:if="{{message}}">{{message}}</view>
+
+      <view class="redeem-success-actions" wx:if="{{redeemed}}">
+        <button class="btn-primary" bindtap="goCourse">进入课程</button>
+        <button class="btn-secondary mt-16" bindtap="goHome">回到首页</button>
+      </view>
+    </view>
+
+    <view class="redeem-section">
+      <view class="redeem-section__title">Premium Benefits</view>
+      <view class="redeem-section__badge">VIP PRIVILEGE</view>
+    </view>
+
+    <view class="benefit-grid">
+      <block wx:for="{{benefits}}" wx:key="title">
+        <view class="surface-wrap benefit-card">
+          <view class="benefit-icon benefit-icon--{{item.icon}}"></view>
+          <view class="benefit-title">{{item.title}}</view>
+          <view class="benefit-subtitle">{{item.subtitle}}</view>
+        </view>
+      </block>
+    </view>
+
+    <view class="redeem-quote">
+      <view class="redeem-quote__art"></view>
+      <view class="redeem-quote__mask"></view>
+      <view class="redeem-quote__text">"The sanctuary for curious minds."</view>
+    </view>
   </view>
 </view>

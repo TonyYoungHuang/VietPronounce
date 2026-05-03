@@ -1,4 +1,4 @@
-﻿const assert = require('assert/strict');
+const assert = require('assert/strict');
 const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
@@ -60,7 +60,13 @@ async function stopServer(child) {
   const beforeBackups = fs.existsSync(backupDir) ? new Set(fs.readdirSync(backupDir)) : new Set();
   const child = spawn(process.execPath, ['server.js'], {
     cwd: backendDir,
-    env: { ...process.env, PORT: String(port), ADMIN_PASSWORD: adminPassword },
+    env: {
+      ...process.env,
+      PORT: String(port),
+      ADMIN_PASSWORD: adminPassword,
+      SCORE_ALLOW_BASELINE_FALLBACK: 'true',
+      AZURE_SPEECH_DISABLED: 'true'
+    },
     stdio: ['ignore', 'pipe', 'pipe']
   });
 
@@ -76,11 +82,30 @@ async function stopServer(child) {
     const trial = await requestJson('/api/trial?dialect=north');
     assert.equal(trial.levelId, 'beginner');
 
-    const user = await requestJson('/api/auth/mock-login', {
+    const scoreForm = new FormData();
+    scoreForm.append('dialect', 'north');
+    scoreForm.append('itemId', trial.id);
+    scoreForm.append('text', trial.text);
+    scoreForm.append('type', trial.type);
+    scoreForm.append('lessonId', trial.lessonId);
+    scoreForm.append('levelId', trial.levelId);
+    scoreForm.append('durationMs', '2100');
+    scoreForm.append('attemptCount', '1');
+    scoreForm.append('audio', new Blob([Buffer.alloc(12000, 1)], { type: 'audio/mpeg' }), 'check.mp3');
+    const scoreResponse = await fetch(`${baseUrl}/api/pronunciation/score`, {
+      method: 'POST',
+      body: scoreForm
+    });
+    const scorePayload = await scoreResponse.json();
+    assert.equal(scorePayload.ok, true, 'score endpoint should return ok=true');
+    assert.ok(scorePayload.data.score.total >= 0, 'score endpoint should return total score');
+    assert.equal(scorePayload.data.score.scoreSource, 'backend-baseline');
+
+    const user = await requestJson('/api/auth/wechat-login', {
       method: 'POST',
       body: { nickName: 'backend-check' }
     });
-    assert.ok(user.userId, 'mock login 应返回 userId');
+    assert.ok(user.userId, 'login should return userId');
 
     const userId = user.userId;
     await requestJson('/api/auth/bind-phone', {

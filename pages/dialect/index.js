@@ -1,30 +1,53 @@
-﻿const store = require('../../utils/store');
+const store = require('../../utils/store');
 const { syncCatalog, syncTrial } = require('../../services/content-sync');
+const { attachShare } = require('../../utils/share');
 
-Page({
+Page(attachShare({
   data: {
     dialects: [
-      { id: 'north', name: '北越', description: '标准感更强，音调区分更明显。' },
-      { id: 'south', name: '南越', description: '语流更顺，口感更自然。' }
+      { id: 'north', name: '北越', description: '河内标准音路线，声调区分清晰。' },
+      { id: 'south', name: '南越', description: '西贡语流路线，口感更松弛。' }
     ],
-    selectedDialect: 'north'
+    selectedDialect: 'north',
+    avatarText: 'V',
+    otherLanguages: [
+      { id: 'thai', name: '泰语', sub: 'ภาษาไทย', tone: 'warm', icon: 'temple' },
+      { id: 'malay', name: '马来语', sub: 'Bahasa Melayu', tone: 'forest', icon: 'city' },
+      { id: 'tagalog', name: '菲律宾语', sub: 'Tagalog', tone: 'mint', icon: 'boat' }
+    ]
   },
 
   async onLoad() {
     const state = store.getState();
-    this.setData({ selectedDialect: state.selectedDialect || 'north' });
+    const nickName = state.auth.nickName || '发音练习学员';
+    this.setData({
+      selectedDialect: state.selectedDialect || 'north',
+      avatarText: nickName.slice(0, 1).toUpperCase() || 'V'
+    });
 
     try {
       await syncCatalog();
+      const dialectIds = store.getDialectIds();
       this.setData({
-        dialects: ['north', 'south'].map((dialect) => {
-          const meta = store.getDialectMeta(dialect);
+        dialects: ['north', 'south'].filter((dialect) => dialectIds.includes(dialect)).map((dialect) => {
+          const meta = store.getLanguageInfo(dialect);
           return {
             id: dialect,
             name: meta.name,
             description: meta.description
           };
-        })
+        }),
+        otherLanguages: this.data.otherLanguages
+          .filter((item) => dialectIds.includes(item.id))
+          .map((item) => {
+            const meta = store.getLanguageInfo(item.id);
+            return {
+              ...item,
+              name: meta.name || item.name,
+              sub: meta.englishName || item.sub,
+              description: meta.description || ''
+            };
+          })
       });
     } catch (error) {
       // keep local fallback
@@ -35,6 +58,13 @@ Page({
     const dialect = event.currentTarget.dataset.dialect;
     this.setData({ selectedDialect: dialect });
     store.setSelectedDialect(dialect);
+  },
+
+  chooseLanguage(event) {
+    const dialect = event.currentTarget.dataset.dialect;
+    this.setData({ selectedDialect: dialect });
+    store.setSelectedDialect(dialect);
+    this.startTrial();
   },
 
   async previewAudio(event) {
@@ -62,7 +92,15 @@ Page({
     wx.navigateTo({ url: `/pages/trial/index?dialect=${dialect}&mode=trial` });
   },
 
+  goHome() {
+    wx.switchTab({ url: '/pages/home/index' });
+  },
+
+  goProfile() {
+    wx.switchTab({ url: '/pages/profile/index' });
+  },
+
   onUnload() {
     if (this.audio) this.audio.destroy();
   }
-});
+}, { path: '/pages/landing/index?from=share' }));

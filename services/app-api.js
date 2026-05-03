@@ -1,4 +1,4 @@
-﻿const { getAppApiConfig } = require('../config/index');
+const { getAppApiConfig } = require('../config/index');
 const { buildUrl, request } = require('./request');
 
 function parsePayload(response) {
@@ -16,10 +16,10 @@ function parsePayload(response) {
 function assertOk(response) {
   const payload = parsePayload(response);
   if (!response || response.statusCode < 200 || response.statusCode >= 300) {
-    throw new Error(payload.message || '接口调用失败');
+    throw new Error(payload.message || '服务暂时不可用，请稍后再试');
   }
   if (payload && payload.ok === false) {
-    throw new Error(payload.message || '接口调用失败');
+    throw new Error(payload.message || '服务暂时不可用，请稍后再试');
   }
   return Object.prototype.hasOwnProperty.call(payload, 'data') ? payload.data : payload;
 }
@@ -42,12 +42,21 @@ function fetchCatalog() {
   return call('/api/catalog');
 }
 
+function checkHealth() {
+  const config = getAppApiConfig();
+  return call(config.healthPath || '/health');
+}
+
+function fetchPublicConfig() {
+  return call('/api/config/public');
+}
+
 function fetchTrial(dialect) {
   return call('/api/trial', { data: { dialect } });
 }
 
-function mockLogin(nickName) {
-  return call('/api/auth/mock-login', {
+function loginWithWechat(nickName) {
+  return call('/api/auth/wechat-login', {
     method: 'POST',
     data: { nickName }
   });
@@ -98,9 +107,11 @@ function fetchWeakness(userId, dialect) {
 }
 
 module.exports = {
+  checkHealth,
+  fetchPublicConfig,
   fetchCatalog,
   fetchTrial,
-  mockLogin,
+  loginWithWechat,
   bindPhone,
   fetchUserState,
   updateDialect,

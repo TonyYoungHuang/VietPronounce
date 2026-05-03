@@ -1,33 +1,43 @@
-﻿<view class="container">
-  <view class="hero-card">
-    <view class="eyebrow">{{dialectLabel}} · {{levelName}}</view>
-    <view class="title">章节列表</view>
-    <view class="subtitle">已通过的内容可以随时回练，未达标的内容也可以先看后面的条目，但不会推动正式进度。</view>
+<view class="sanctuary-page lesson-page">
+  <view class="topbar">
+    <view class="topbar-action" bindtap="goLevels">‹</view>
+    <view class="topbar-spacer"></view>
+    <view class="topbar-action">课</view>
   </view>
 
-  <block wx:for="{{lessons}}" wx:key="id" wx:for-item="lesson">
-    <view class="panel">
-      <view class="row between">
-        <view>
-          <view class="section-title">{{lesson.title}}</view>
-          <view class="section-subtitle">{{lesson.summary}}</view>
-        </view>
-        <view class="badge">{{lesson.progress.passed}} / {{lesson.progress.total}}</view>
-      </view>
-      <view class="divider"></view>
-      <block wx:for="{{lesson.items}}" wx:key="id" wx:for-item="entry">
-        <view class="item-card list-item" data-item-id="{{entry.id}}" bindtap="openItem">
-          <view class="row between">
-            <view>
-              <view class="section-title" style="font-size: 30rpx;">{{entry.text}}</view>
-              <view class="section-subtitle">{{entry.translation}}</view>
-            </view>
-            <view class="{{entry.passed ? 'badge-success' : (entry.attempted ? 'badge-warn' : 'badge-muted')}}">{{entry.passed ? '已通过' : (entry.attempted ? '未达标' : '未练习')}}</view>
-          </view>
-          <view class="note">{{entry.type}}{{entry.attempted ? (' · 最近得分 ' + entry.total) : ''}}</view>
-        </view>
-      </block>
+  <view class="container topbar-offset lesson-page__content">
+    <view class="offline-banner" wx:if="{{offlineNotice}}">{{offlineNotice}}</view>
+    <view class="lesson-hero">
+      <view class="warm-badge">{{dialectLabel}} · {{levelName}}</view>
+      <view class="hero-display mt-24">章节列表</view>
+      <view class="body-copy">已完成内容可以随时复练；分数偏低的条目会进入薄弱项，方便集中打磨。</view>
     </view>
-  </block>
-  <view class="footer-space"></view>
+
+    <block wx:for="{{lessons}}" wx:key="id" wx:for-item="lesson">
+      <view class="surface-card lesson-card">
+        <view class="lesson-card__head">
+          <view class="lesson-card__order">{{lesson.order}}</view>
+          <view class="lesson-card__progress">{{lesson.progress.passed}} / {{lesson.progress.total}}</view>
+        </view>
+        <view class="lesson-card__title">{{lesson.title}}</view>
+        <view class="lesson-card__summary">{{lesson.summary}}</view>
+
+        <view class="lesson-items">
+          <block wx:for="{{lesson.items}}" wx:key="id" wx:for-item="entry">
+            <view class="surface-wrap lesson-item" data-item-id="{{entry.id}}" bindtap="openItem">
+              <view class="lesson-item__index">{{entry.order}}</view>
+              <view class="lesson-item__body">
+                <view class="lesson-item__text">{{entry.text}}</view>
+                <view class="lesson-item__translation">{{entry.translation}}</view>
+                <view class="lesson-item__meta">{{entry.typeLabel}}{{entry.attempted ? (' · 最近得分 ' + entry.total) : ''}}</view>
+              </view>
+              <view class="lesson-item__status {{entry.passed ? 'lesson-item__status--done' : (entry.attempted ? 'lesson-item__status--warm' : '')}}">
+                {{entry.passed ? '达标' : (entry.attempted ? '复练' : '开始')}}
+              </view>
+            </view>
+          </block>
+        </view>
+      </view>
+    </block>
+  </view>
 </view>

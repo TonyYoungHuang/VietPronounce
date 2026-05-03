@@ -1,22 +1,31 @@
-﻿<view class="container">
-  <view class="hero-card">
-    <view class="eyebrow">{{dialectLabel}} 路径</view>
-    <view class="title">沿着等级一路往前推。</view>
-    <view class="subtitle">每一级都按从音到词到句子的顺序推进。你可以提前查看后面的内容，但只有达标才会计入正式进度。</view>
+<view class="sanctuary-page levels-page">
+  <view class="topbar">
+    <view class="topbar-action" bindtap="goHome">‹</view>
+    <view class="topbar-spacer"></view>
+    <view class="topbar-action">路</view>
   </view>
 
-  <block wx:for="{{levels}}" wx:key="id">
-    <view class="path-card">
-      <view class="row between">
-        <view>
-          <view class="section-title">{{item.name}}</view>
-          <view class="section-subtitle">{{item.subtitle}}</view>
-        </view>
-        <view class="badge">{{item.progress.passed}} / {{item.progress.total}}</view>
-      </view>
-      <view class="note">{{item.accent}} · {{item.lessonCount}} 个章节 · {{item.itemCount}} 条训练</view>
-      <button class="btn-primary mt-24" data-level-id="{{item.id}}" bindtap="openLevel">进入 {{item.name}}</button>
+  <view class="container topbar-offset levels-page__content">
+    <view class="offline-banner" wx:if="{{offlineNotice}}">{{offlineNotice}}</view>
+    <view class="levels-hero">
+      <view class="warm-badge">{{dialectLabel}} 路径</view>
+      <view class="hero-display mt-24">沿着等级<br />稳步推进</view>
+      <view class="body-copy">从音节、单词到短句逐步训练。未达标内容可以反复练，不影响继续浏览课程。</view>
     </view>
-  </block>
-  <view class="footer-space"></view>
+
+    <view class="levels-list">
+      <block wx:for="{{levels}}" wx:key="id">
+        <view class="surface-card level-card" data-level-id="{{item.id}}" bindtap="openLevel">
+          <view class="level-card__top">
+            <view class="level-card__order">{{item.order}}</view>
+            <view class="level-card__progress">{{item.progress.passed}} / {{item.progress.total}}</view>
+          </view>
+          <view class="level-card__title">{{item.name}}</view>
+          <view class="level-card__sub">{{item.subtitle}}</view>
+          <view class="level-card__meta">{{item.accent}} · {{item.lessonCount}} 个章节 · {{item.itemCount}} 条训练</view>
+          <button class="btn-primary mt-32" data-level-id="{{item.id}}" bindtap="openLevel">进入 {{item.name}}</button>
+        </view>
+      </block>
+    </view>
+  </view>
 </view>

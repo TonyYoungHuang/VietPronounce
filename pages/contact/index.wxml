@@ -1,22 +1,51 @@
-﻿<view class="container">
-  <view class="hero-card">
-    <view class="eyebrow">成交顾问</view>
-    <view class="title">先咨询，再去电商平台购买。</view>
-    <view class="subtitle">客服主要负责解释完整版内容、引导下单，以及说明兑换码怎么回到小程序开通。</view>
+<view class="sanctuary-page contact-page">
+  <view class="topbar">
+    <view class="avatar-shell"><view class="avatar-shell__core">V</view></view>
+    <view class="topbar-spacer"></view>
+    <view class="topbar-action" bindtap="goRedeem">券</view>
   </view>
 
-  <view class="panel">
-    <view class="section-title">联系客服</view>
-    <view class="section-subtitle">建议先说明你想学北越还是南越，客服会根据你的方向给购买建议。</view>
-    <button class="btn-primary mt-24" bindtap="copyWechat">复制客服微信：VIET-COACH-001</button>
-    <button class="btn-ghost mt-16" bindtap="copyTaobao">复制购买说明</button>
-  </view>
+  <view class="container topbar-offset contact-page__content">
+    <view class="contact-hero">
+      <view class="hero-display">课程咨询<br />与开通</view>
+      <view class="body-copy">先确认学习方向和课程权益，再通过兑换码开通完整训练路径。</view>
+    </view>
 
-  <view class="panel">
-    <view class="section-title">常见问题</view>
-    <view class="list-item mt-24"><view class="badge">Q1</view><view class="section-subtitle">买一次后长期有效吗？第一版按长期使用权处理。</view></view>
-    <view class="list-item"><view class="badge">Q2</view><view class="section-subtitle">购买后北越和南越都能用吗？可以，两套都会解锁，但进度分开保存。</view></view>
-    <view class="list-item"><view class="badge">Q3</view><view class="section-subtitle">怎么开通？在电商平台购买后拿兑换码，回到小程序输入即可。</view></view>
+    <view class="surface-card contact-card">
+      <view class="contact-card__leaf"></view>
+      <view class="warm-badge">CONSULT</view>
+      <view class="contact-card__title">咨询前可先说明学习方向</view>
+      <view class="section-subtitle">例如：想练北越标准音，或想练南越日常交流发音。这样更容易获得合适的购买建议。</view>
+      <button class="btn-primary mt-32" bindtap="copyConsult">复制咨询说明</button>
+      <button class="btn-secondary mt-16" bindtap="copyPurchaseFlow">复制开通流程</button>
+    </view>
+
+    <view class="section-head">
+      <view class="section-title">常见问题</view>
+      <view class="section-link">FAQ</view>
+    </view>
+    <view class="contact-faq">
+      <view class="surface-wrap contact-faq__item">
+        <view class="contact-faq__mark">01</view>
+        <view>
+          <view class="contact-faq__title">课程开通后多久有效？</view>
+          <view class="contact-faq__copy">当前版本按长期使用权益处理，后续内容更新会继续保留学习记录。</view>
+        </view>
+      </view>
+      <view class="surface-wrap contact-faq__item">
+        <view class="contact-faq__mark">02</view>
+        <view>
+          <view class="contact-faq__title">北越和南越都能学习吗？</view>
+          <view class="contact-faq__copy">完整课程会同时解锁两套路径，学习进度分开保存。</view>
+        </view>
+      </view>
+      <view class="surface-wrap contact-faq__item">
+        <view class="contact-faq__mark">03</view>
+        <view>
+          <view class="contact-faq__title">购买后如何开通？</view>
+          <view class="contact-faq__copy">拿到兑换码后，回到小程序「个人」页面输入即可开通。</view>
+        </view>
+      </view>
+    </view>
   </view>
-  <view class="footer-space"></view>
 </view>

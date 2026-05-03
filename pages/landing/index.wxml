@@ -1,41 +1,151 @@
-﻿<view class="container">
-  <view class="hero-card">
-    <view class="eyebrow">越南语 · 机器纠音训练器</view>
-    <view class="title">发音纠正，先比别人更准一步。</view>
-    <view class="subtitle">专注越南语发音纠正，北越 / 南越双体系，先试听、再跟读、再出分，零基础也能直接开始。</view>
-    <view class="metric-grid">
-      <view class="metric-card"><view class="metric-number">3s</view><view class="metric-label">目标评分返回</view></view>
-      <view class="metric-card"><view class="metric-number">2套</view><view class="metric-label">北越 / 南越体系</view></view>
-      <view class="metric-card"><view class="metric-number">3维</view><view class="metric-label">完整度 准确度 流利度</view></view>
-      <view class="metric-card"><view class="metric-number">0门槛</view><view class="metric-label">先试听再免费试练</view></view>
+<view class="sanctuary-page landing-page">
+  <view class="topbar">
+    <view class="avatar-shell">
+      <view class="avatar-shell__core">V</view>
     </view>
-    <view class="mt-32">
-      <button class="btn-primary" bindtap="goStart">立即体验</button>
-      <button class="btn-ghost mt-16" bindtap="goContact">了解完整版与购买方式</button>
-    </view>
+    <view class="landing-topbar-title">每天练一点，发音准一点</view>
+    <view class="topbar-action topbar-gear" bindtap="goContact"></view>
   </view>
 
-  <view class="panel">
-    <view class="section-title">为什么它像一位发音教练？</view>
-    <view class="section-subtitle">不是让你泛泛地练口语，而是把每一句拆开，让你知道错在哪里、为什么要重练。</view>
-    <view class="list-item mt-24">
-      <view class="badge">卖点 01</view>
-      <view class="section-subtitle">准确度优先：评分重点放在发音准不准，不是只给一个总分就结束。</view>
-    </view>
-    <view class="list-item">
-      <view class="badge">卖点 02</view>
-      <view class="section-subtitle">错误定位：原文高亮 + 列表说明，帮助你立刻知道哪个音节和声调需要修正。</view>
-    </view>
-    <view class="list-item">
-      <view class="badge">卖点 03</view>
-      <view class="section-subtitle">双体系：北越和南越完全分开训练，标准音与学习进度不会混在一起。</view>
-    </view>
-  </view>
+  <view class="container topbar-offset landing-content">
+    <view class="landing-hero">
+      <view class="landing-hero__leaf landing-hero__leaf--one"></view>
+      <view class="landing-hero__leaf landing-hero__leaf--two"></view>
+      <view class="landing-hero__orb landing-hero__orb--one"></view>
+      <view class="landing-hero__orb landing-hero__orb--two"></view>
 
-  <view class="cta-card">
-    <view class="section-title">体验路径</view>
-    <view class="section-subtitle">先选体系 -> 免费试练 -> 看完整结果 -> 联系客服购买 -> 兑换码开通完整版</view>
-    <button class="btn-secondary mt-24" bindtap="goStart">进入免费试练</button>
+      <view class="hero-display landing-title">选择要训练的<br />亚洲语种</view>
+      <view class="body-copy landing-copy">越南语、泰语、马来语、印尼语、菲律宾语、印地语和泰米尔语都可以从免费试练开始。先听标准音，再录音评分，最后进入对应课程。</view>
+
+      <view class="landing-actions">
+        <view class="sanctuary-cta sanctuary-cta--primary" bindtap="startSelected">
+          <text>开始当前语种</text>
+          <view class="cta-arrow"></view>
+        </view>
+        <view class="sanctuary-cta sanctuary-cta--secondary" bindtap="goContact">
+          <text>了解完整课程</text>
+          <view class="cta-book"></view>
+        </view>
+      </view>
+    </view>
+
+    <view class="landing-language-grid">
+      <block wx:for="{{languages}}" wx:key="id">
+        <view
+          class="landing-language-card landing-language-card--{{item.tone}} {{selectedDialect === item.id ? 'landing-language-card--active' : ''}}"
+          data-dialect="{{item.id}}"
+          bindtap="selectLanguage"
+        >
+          <view class="landing-language-card__icon mini-symbol mini-symbol--{{item.icon}}"></view>
+          <view class="landing-language-card__body">
+            <view class="landing-language-card__name">{{item.name}}</view>
+            <view class="landing-language-card__sub">{{item.sub}}</view>
+          </view>
+          <view class="landing-language-card__badge">{{item.unlocked ? '已开通' : '试练'}}</view>
+        </view>
+      </block>
+    </view>
+
+    <view class="surface-card landing-activate">
+      <view class="landing-activate__head">
+        <view>
+          <view class="landing-activate__eyebrow">ACTIVATION</view>
+          <view class="landing-activate__title">输入激活码开通当前语种</view>
+        </view>
+        <view class="landing-activate__chip">已选</view>
+      </view>
+      <view class="landing-activate__selected">
+        <block wx:for="{{languages}}" wx:key="id">
+          <text wx:if="{{selectedDialect === item.id}}">{{item.name}} · {{item.sub}}</text>
+        </block>
+      </view>
+      <view class="landing-activate__form">
+        <input
+          class="landing-activate__input"
+          value="{{activationCode}}"
+          placeholder="输入对应语种激活码"
+          placeholder-class="landing-activate__placeholder"
+          bindinput="handleCodeInput"
+        />
+        <button class="landing-activate__button" loading="{{activationLoading}}" disabled="{{activationLoading}}" bindtap="activateCode">激活</button>
+      </view>
+      <view class="landing-activate__message" wx:if="{{activationMessage}}">{{activationMessage}}</view>
+    </view>
+
+    <view class="landing-scenery">
+      <view class="landing-scenery__sun"></view>
+      <view class="landing-scenery__mountain landing-scenery__mountain--left"></view>
+      <view class="landing-scenery__mountain landing-scenery__mountain--right"></view>
+      <view class="landing-scenery__river"></view>
+      <view class="landing-scenery__leaf landing-scenery__leaf--left"></view>
+      <view class="landing-scenery__leaf landing-scenery__leaf--right"></view>
+      <view class="landing-scenery__mask"></view>
+      <view class="landing-scenery__quote">“语言是开启另一种生活的钥匙。”</view>
+    </view>
+
+    <view class="landing-metrics">
+      <view class="surface-wrap landing-metric landing-metric--score">
+        <view class="landing-metric__icon metric-icon metric-icon--score"></view>
+        <view class="landing-metric__value">8种</view>
+        <view class="landing-metric__label">准确度 / 完整度 / 流利度</view>
+      </view>
+      <view class="surface-wrap landing-metric landing-metric--path">
+        <view class="landing-metric__icon metric-icon metric-icon--path"></view>
+        <view class="landing-metric__value">多套</view>
+        <view class="landing-metric__label">按语种独立课程路径</view>
+      </view>
+    </view>
+
+    <view class="section-head landing-section-head">
+      <view class="section-title">主链路</view>
+      <view class="section-link" bindtap="goStart">开始</view>
+    </view>
+
+    <view class="landing-flow">
+      <view class="surface-wrap landing-flow__item landing-flow__item--one">
+        <view class="landing-flow__icon flow-icon flow-icon--dialect">
+          <view class="flow-icon__book-left"></view>
+          <view class="flow-icon__book-right"></view>
+        </view>
+        <view class="landing-flow__watermark flow-watermark flow-watermark--dialect">
+          <view class="flow-watermark__book-left"></view>
+          <view class="flow-watermark__book-right"></view>
+          <view class="flow-watermark__leaf"></view>
+        </view>
+        <view class="landing-flow__num">01</view>
+        <view class="landing-flow__title">选择体系</view>
+        <view class="landing-flow__copy">先选择越南语、泰语、马来语或菲律宾语，再进入免费试练。</view>
+      </view>
+      <view class="surface-wrap landing-flow__item landing-flow__item--two">
+        <view class="landing-flow__icon flow-icon flow-icon--record">
+          <view class="flow-icon__mic-head"></view>
+          <view class="flow-icon__mic-stand"></view>
+        </view>
+        <view class="landing-flow__watermark flow-watermark flow-watermark--record">
+          <view class="flow-watermark__mic-head"></view>
+          <view class="flow-watermark__mic-stand"></view>
+          <view class="flow-watermark__sound flow-watermark__sound--one"></view>
+          <view class="flow-watermark__sound flow-watermark__sound--two"></view>
+        </view>
+        <view class="landing-flow__num">02</view>
+        <view class="landing-flow__title">录音评分</view>
+        <view class="landing-flow__copy">听标准音、跟读录音，并获得分项反馈。</view>
+      </view>
+      <view class="surface-wrap landing-flow__item landing-flow__item--three">
+        <view class="landing-flow__icon flow-icon flow-icon--unlock">
+          <view class="flow-icon__lock-arc"></view>
+          <view class="flow-icon__lock-body"></view>
+        </view>
+        <view class="landing-flow__watermark flow-watermark flow-watermark--unlock">
+          <view class="flow-watermark__lock-arc"></view>
+          <view class="flow-watermark__lock-body"></view>
+          <view class="flow-watermark__spark flow-watermark__spark--one"></view>
+          <view class="flow-watermark__spark flow-watermark__spark--two"></view>
+        </view>
+        <view class="landing-flow__num">03</view>
+        <view class="landing-flow__title">激活课程</view>
+        <view class="landing-flow__copy">输入对应语种激活码，解锁该语种完整学习路径。</view>
+      </view>
+    </view>
   </view>
-  <view class="footer-space"></view>
 </view>

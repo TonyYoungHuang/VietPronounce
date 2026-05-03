@@ -1,1 +1,39 @@
-﻿
+.contact-page__content { padding-bottom: 180rpx; }
+.contact-hero { padding-top: 18rpx; }
+.contact-card { position: relative; margin-top: 70rpx; padding: 46rpx 42rpx; overflow: hidden; }
+.contact-card__leaf {
+  position: absolute;
+  right: -22rpx;
+  top: 28rpx;
+  width: 148rpx;
+  height: 148rpx;
+  border-radius: 48rpx 0 48rpx 48rpx;
+  background: rgba(0, 107, 71, 0.08);
+  transform: rotate(45deg);
+}
+.contact-card__title {
+  position: relative;
+  z-index: 1;
+  margin-top: 28rpx;
+  color: var(--on-surface);
+  font-size: 38rpx;
+  line-height: 1.25;
+  font-weight: 900;
+}
+.contact-faq { display: grid; gap: 24rpx; }
+.contact-faq__item { display: flex; gap: 22rpx; padding: 30rpx; border-radius: 38rpx; }
+.contact-faq__mark {
+  flex: 0 0 64rpx;
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  background: #006b47;
+  font-size: 20rpx;
+  font-weight: 900;
+}
+.contact-faq__title { color: var(--on-surface); font-size: 30rpx; font-weight: 900; line-height: 1.35; }
+.contact-faq__copy { margin-top: 10rpx; color: var(--on-surface-variant); font-size: 25rpx; line-height: 1.6; }

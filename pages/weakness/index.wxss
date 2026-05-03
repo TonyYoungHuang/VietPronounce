@@ -1,1 +1,176 @@
-﻿
+.page-weakness__content {
+  padding-bottom: 220rpx;
+}
+
+.weakness-hero {
+  padding-top: 8rpx;
+}
+
+.weakness-levels {
+  margin-top: 44rpx;
+}
+
+.weakness-lock,
+.weakness-empty {
+  margin-top: 64rpx;
+  text-align: center;
+}
+
+.weakness-lock__icon,
+.weakness-empty__mark {
+  position: relative;
+  width: 112rpx;
+  height: 112rpx;
+  margin: 0 auto 34rpx;
+  border-radius: 50%;
+  background: #dff0e8;
+  color: var(--primary);
+}
+
+.weakness-lock__icon::before,
+.weakness-empty__mark::before {
+  content: '';
+  position: absolute;
+  left: 34rpx;
+  top: 48rpx;
+  width: 44rpx;
+  height: 34rpx;
+  border-radius: 6rpx;
+  background: currentColor;
+}
+
+.weakness-lock__icon::after,
+.weakness-empty__mark::after {
+  content: '';
+  position: absolute;
+  left: 39rpx;
+  top: 26rpx;
+  width: 34rpx;
+  height: 32rpx;
+  border: 7rpx solid currentColor;
+  border-bottom: none;
+  border-radius: 24rpx 24rpx 0 0;
+}
+
+.weakness-section-head {
+  margin-top: 72rpx;
+}
+
+.weakness-group-list {
+  display: grid;
+  gap: 28rpx;
+}
+
+.weakness-group-card {
+  padding: 34rpx 32rpx;
+  overflow: hidden;
+}
+
+.weakness-group-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24rpx;
+}
+
+.weakness-group-card__label {
+  color: #191c1b;
+  font-size: 34rpx;
+  font-weight: 900;
+}
+
+.weakness-group-card__meta {
+  margin-top: 10rpx;
+  color: #3e4942;
+  font-size: 24rpx;
+  line-height: 1.45;
+}
+
+.weakness-group-card__score {
+  flex: 0 0 82rpx;
+  width: 82rpx;
+  height: 82rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  background: #006b47;
+  font-size: 30rpx;
+  font-weight: 900;
+}
+
+.weakness-group-card__item {
+  margin-top: 26rpx;
+  padding: 24rpx;
+  border-radius: 32rpx;
+  background: #f2f4f2;
+}
+
+.weakness-group-card__text {
+  color: #191c1b;
+  font-size: 28rpx;
+  font-weight: 900;
+}
+
+.weakness-group-card__tip {
+  margin-top: 10rpx;
+  color: #6b420f;
+  font-size: 24rpx;
+  line-height: 1.55;
+}
+
+.weakness-list {
+  display: grid;
+  gap: 24rpx;
+}
+
+.weakness-item {
+  display: flex;
+  gap: 24rpx;
+  padding: 32rpx;
+}
+
+.weakness-item__score {
+  flex: 0 0 88rpx;
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  background: #895100;
+  font-size: 30rpx;
+  font-weight: 900;
+}
+
+.weakness-item__body {
+  min-width: 0;
+  flex: 1;
+}
+
+.weakness-item__title {
+  color: var(--on-surface);
+  font-size: 32rpx;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.weakness-item__sub {
+  margin-top: 10rpx;
+  color: var(--on-surface-variant);
+  font-size: 25rpx;
+  line-height: 1.5;
+}
+
+.weakness-item__tip {
+  margin-top: 14rpx;
+  color: #6b420f;
+  font-size: 24rpx;
+  line-height: 1.45;
+}
+
+.weakness-empty {
+  padding: 54rpx 40rpx;
+}

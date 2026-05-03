@@ -1,9 +1,16 @@
-﻿const store = require('../../utils/store');
+const store = require('../../utils/store');
+const { attachShare } = require('../../utils/share');
 
-Page({
+Page(attachShare({
   data: {
     trial: null,
-    dialectLabel: '北越'
+    dialectLabel: '北越',
+    moodTitle: '',
+    moodSub: '',
+    issueTips: [],
+    pronunciationDimensions: [],
+    selectedSegmentTip: '',
+    selectedSegmentText: ''
   },
 
   onShow() {
@@ -15,7 +22,25 @@ Page({
       tip: segment.tip,
       active: (trial.result.issueIndices || []).includes(index)
     }));
-    this.setData({ trial: { ...trial.result, segments }, dialectLabel });
+    const issueTips = segments.filter((segment) => segment.active).map((segment) => segment.tip);
+    this.setData({
+      trial: { ...trial.result, segments, dialect: trial.dialect },
+      dialectLabel,
+      issueTips,
+      pronunciationDimensions: trial.result.pronunciationDimensions || [],
+      selectedSegmentTip: issueTips[0] || '点击上方分段，可以查看对应的纠音提示。',
+      selectedSegmentText: segments.find((segment) => segment.active)?.text || '',
+      moodTitle: trial.result.passed ? '这条已经很接近标准音了' : '已找到值得继续打磨的位置',
+      moodSub: trial.result.passed ? '现在你已经体验到系统如何给出可执行反馈。' : '这就是完整课程里每天都会给你的纠音方式。'
+    });
+  },
+
+  selectSegment(event) {
+    const { tip, text } = event.currentTarget.dataset;
+    this.setData({
+      selectedSegmentTip: tip || '这个分段暂时没有单独提示，保持声调、口型和节奏稳定。',
+      selectedSegmentText: text || ''
+    });
   },
 
   playDemo() {
@@ -42,8 +67,12 @@ Page({
     wx.navigateTo({ url: '/pages/login/index?next=/pages/home/index' });
   },
 
+  retryTrial() {
+    wx.navigateBack({ fail: () => wx.redirectTo({ url: `/pages/trial/index?dialect=${this.data.trial.dialect || 'north'}` }) });
+  },
+
   onUnload() {
     if (this.audio) this.audio.destroy();
     if (this.recordAudio) this.recordAudio.destroy();
   }
-});
+}, { path: '/pages/landing/index?from=share' }));

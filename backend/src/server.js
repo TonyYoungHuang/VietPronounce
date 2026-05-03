@@ -1,9 +1,12 @@
-﻿const fs = require('fs');
+const fs = require('fs');
 const http = require('http');
 const path = require('path');
 const { URL } = require('url');
 const adminAuth = require('./admin-auth');
+const azureTts = require('./azure-tts');
+const { DIALECTS } = require('../../data/content-standard');
 const domain = require('./domain');
+const scoring = require('./scoring');
 const store = require('./store');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
@@ -11,7 +14,11 @@ const STATIC_FILES = {
   '/admin': 'admin.html',
   '/admin/': 'admin.html',
   '/admin/admin.css': 'admin.css',
-  '/admin/admin.js': 'admin.js'
+  '/admin/admin.js': 'admin.js',
+  '/activation': 'activation.html',
+  '/activation/': 'activation.html',
+  '/activation/activation.css': 'activation.css',
+  '/activation/activation.js': 'activation.js'
 };
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -37,6 +44,15 @@ function sendError(res, error) {
   const statusCode = error.statusCode || 500;
   const message = error.message || '服务器错误';
   sendJson(res, statusCode, { ok: false, message });
+}
+
+function sendAudio(res, buffer) {
+  res.writeHead(200, {
+    'Content-Type': 'audio/mpeg',
+    'Content-Length': buffer.length,
+    'Cache-Control': 'public, max-age=31536000, immutable'
+  });
+  res.end(buffer);
 }
 
 function parseBody(req) {
@@ -90,20 +106,56 @@ async function handleApi(req, res, url) {
   const method = req.method;
 
   if (method === 'GET' && pathname === '/health') {
-    sendOk(res, { status: 'ok', now: new Date().toISOString() });
+    sendOk(res, {
+      status: 'ok',
+      environment: process.env.NODE_ENV || 'development',
+      scoreProviderConfigured: Boolean(process.env.SCORE_PROVIDER_URL) || scoring.isAzurePronunciationConfigured(),
+      azurePronunciationConfigured: scoring.isAzurePronunciationConfigured(),
+      azureEndpointConfigured: Boolean(process.env.AZURE_SPEECH_ENDPOINT),
+      azureSttEndpoint: scoring.isAzurePronunciationConfigured() ? scoring.getAzureSttEndpoint() : '',
+      azureTtsConfigured: azureTts.isAzureTtsConfigured(),
+      baselineFallbackEnabled: process.env.SCORE_ALLOW_BASELINE_FALLBACK === 'true',
+      now: new Date().toISOString()
+    });
+    return;
+  }
+  if (method === 'GET' && pathname === '/api/config/public') {
+    sendOk(res, {
+      environment: process.env.NODE_ENV || 'development',
+      scoring: {
+        providerConfigured: Boolean(process.env.SCORE_PROVIDER_URL) || scoring.isAzurePronunciationConfigured(),
+        azurePronunciationConfigured: scoring.isAzurePronunciationConfigured(),
+        azureEndpointConfigured: Boolean(process.env.AZURE_SPEECH_ENDPOINT),
+        azureTtsConfigured: azureTts.isAzureTtsConfigured(),
+        baselineFallbackEnabled: process.env.SCORE_ALLOW_BASELINE_FALLBACK === 'true'
+      }
+    });
     return;
   }
   if (method === 'GET' && pathname === '/api/catalog') {
-    sendOk(res, domain.getCatalog());
+    sendOk(res, domain.getPublicCatalog());
     return;
   }
   if (method === 'GET' && pathname === '/api/trial') {
     sendOk(res, domain.getTrial(searchParams.get('dialect')));
     return;
   }
-  if (method === 'POST' && pathname === '/api/auth/mock-login') {
+  if (method === 'POST' && pathname === '/api/pronunciation/score') {
+    sendOk(res, await scoring.scoreUpload(req));
+    return;
+  }
+  if (method === 'GET' && pathname === '/api/audio/demo') {
+    const audio = await azureTts.synthesizeDemoAudio({
+      text: searchParams.get('text'),
+      dialect: searchParams.get('dialect'),
+      mode: searchParams.get('mode')
+    });
+    sendAudio(res, audio);
+    return;
+  }
+  if (method === 'POST' && pathname === '/api/auth/wechat-login') {
     const body = await parseBody(req);
-    sendOk(res, domain.mockLogin(body.nickName), 201);
+    sendOk(res, domain.loginWithWechat(body.nickName), 201);
     return;
   }
   if (method === 'POST' && pathname === '/api/auth/bind-phone') {
@@ -178,7 +230,10 @@ async function handleApi(req, res, url) {
     return;
   }
   if (method === 'GET' && pathname === '/api/admin/trial') {
-    sendOk(res, { north: domain.getTrial('north'), south: domain.getTrial('south') });
+    sendOk(res, DIALECTS.reduce((accumulator, dialect) => {
+      accumulator[dialect] = domain.getTrial(dialect);
+      return accumulator;
+    }, {}));
     return;
   }
   if (method === 'PUT' && pathname === '/api/admin/trial') {

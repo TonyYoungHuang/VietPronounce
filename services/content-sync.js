@@ -1,6 +1,8 @@
 const store = require('../utils/store');
 const appApi = require('./app-api');
+const { normalizeDialect } = require('../data/content-standard');
 const { assertCatalogShape, assertTrialShape } = require('../utils/content-validate');
+const { markOnline, markUsingCache } = require('../utils/network-status');
 
 function getFallbackCatalog() {
   const state = store.getState();
@@ -18,20 +20,24 @@ async function syncCatalog() {
     const remoteCatalog = await appApi.fetchCatalog();
     assertCatalogShape(remoteCatalog);
     store.setRemoteCatalog(remoteCatalog);
+    markOnline();
     return remoteCatalog;
   } catch (error) {
+    markUsingCache();
     return getFallbackCatalog();
   }
 }
 
 async function syncTrial(dialect) {
-  const normalizedDialect = dialect === 'south' ? 'south' : 'north';
+  const normalizedDialect = normalizeDialect(dialect);
   try {
     const remoteTrial = await appApi.fetchTrial(normalizedDialect);
     assertTrialShape(remoteTrial, normalizedDialect);
     store.setRemoteTrialByDialect(normalizedDialect, remoteTrial);
+    markOnline();
     return remoteTrial;
   } catch (error) {
+    markUsingCache();
     return getFallbackTrial(normalizedDialect);
   }
 }

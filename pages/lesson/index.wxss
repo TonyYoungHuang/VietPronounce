@@ -1,1 +1,64 @@
-﻿
+.lesson-page__content { padding-bottom: 180rpx; }
+.lesson-hero { padding-top: 12rpx; }
+.lesson-card { margin-top: 54rpx; padding: 36rpx 30rpx; }
+.lesson-card__head { display: flex; align-items: center; justify-content: space-between; }
+.lesson-card__order {
+  width: 66rpx;
+  height: 66rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  background: #006b47;
+  font-size: 22rpx;
+  font-weight: 900;
+}
+.lesson-card__progress {
+  min-height: 50rpx;
+  padding: 0 20rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  color: #895100;
+  background: #fff4e9;
+  font-size: 23rpx;
+  font-weight: 900;
+}
+.lesson-card__title { margin-top: 28rpx; color: var(--on-surface); font-size: 38rpx; font-weight: 900; line-height: 1.3; }
+.lesson-card__summary { margin-top: 12rpx; color: var(--on-surface-variant); font-size: 26rpx; line-height: 1.65; }
+.lesson-items { display: grid; gap: 20rpx; margin-top: 30rpx; }
+.lesson-item { display: flex; align-items: center; gap: 20rpx; padding: 24rpx; border-radius: 34rpx; }
+.lesson-item__index {
+  flex: 0 0 58rpx;
+  width: 58rpx;
+  height: 58rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #006b47;
+  background: #dff0e8;
+  font-size: 20rpx;
+  font-weight: 900;
+}
+.lesson-item__body { min-width: 0; flex: 1; }
+.lesson-item__text { color: var(--on-surface); font-size: 32rpx; font-weight: 900; line-height: 1.3; }
+.lesson-item__translation { margin-top: 8rpx; color: var(--on-surface-variant); font-size: 24rpx; line-height: 1.45; }
+.lesson-item__meta { margin-top: 10rpx; color: #895100; font-size: 22rpx; font-weight: 800; }
+.lesson-item__status {
+  flex: 0 0 auto;
+  min-width: 78rpx;
+  height: 52rpx;
+  padding: 0 18rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3e4942;
+  background: #e6e9e7;
+  font-size: 22rpx;
+  font-weight: 900;
+}
+.lesson-item__status--done { color: #ffffff; background: #006b47; }
+.lesson-item__status--warm { color: #683d00; background: #ffdcbc; }

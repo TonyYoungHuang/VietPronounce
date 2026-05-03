@@ -1,8 +1,73 @@
-﻿const store = require('../../utils/store');
+const store = require('../../utils/store');
 const appApi = require('../../services/app-api');
 const { syncCatalog } = require('../../services/content-sync');
+const syncTabBar = require('../../utils/tab-bar');
+const { attachShare } = require('../../utils/share');
 
-Page({
+function buildRingStyle(percent) {
+  return `background: conic-gradient(#00875a 0%, #00875a ${percent}%, #e5ebe7 ${percent}%, #e5ebe7 100%);`;
+}
+
+function buildTiles(options) {
+  const { unlocked, continueTarget, weakCount } = options;
+  if (!unlocked) {
+    return [
+      {
+        id: 'pronunciation',
+        action: 'trial',
+        tone: 'warm',
+        title: '发音纠正',
+        subtitle: '先录一条，马上看到完整度、准确度与流利度',
+        icon: 'voice'
+      },
+      {
+        id: 'reading',
+        action: 'contact',
+        tone: 'green',
+        title: '短文阅读',
+        subtitle: '了解课程内容、开通方式和兑换码流程',
+        icon: 'book'
+      },
+      {
+        id: 'culture',
+        action: 'profile',
+        tone: 'forest',
+        title: '文化浸润',
+        subtitle: '先登录与绑定手机，为后续开通做好准备',
+        icon: 'temple'
+      }
+    ];
+  }
+
+  return [
+    {
+      id: 'pronunciation',
+      action: 'continue',
+      tone: 'warm',
+      title: '发音纠正',
+      subtitle: continueTarget ? `继续练习 ${continueTarget.text}` : '掌握六个核心声调的微妙差别',
+      icon: 'voice'
+    },
+    {
+      id: 'reading',
+      action: 'levels',
+      tone: 'green',
+      title: '短文阅读',
+      subtitle: '阅读关于河内街头美食的故事',
+      icon: 'book'
+    },
+    {
+      id: 'culture',
+      action: 'weakness',
+      tone: 'forest',
+      title: '文化浸润',
+      subtitle: weakCount ? `已有 ${weakCount} 个薄弱项等待复练` : '探索越南传统节日与习俗',
+      icon: 'temple'
+    }
+  ];
+}
+
+Page(attachShare({
   data: {
     selectedDialect: 'north',
     dialectLabel: '北越',
@@ -10,10 +75,20 @@ Page({
     loggedIn: false,
     hasPhone: false,
     continueTarget: null,
-    levels: []
+    levels: [],
+    heroName: '林先生',
+    avatarText: 'V',
+    overallPercent: 0,
+    ringStyle: buildRingStyle(0),
+    outstandingCount: 0,
+    currentCourseTitle: '河内方言与基础',
+    currentCourseSubtitle: '掌握越南语的声调、音节和日常短句。',
+    courseButtonText: '继续课程',
+    tiles: []
   },
 
   async onShow() {
+    syncTabBar(this, 'pages/home/index');
     await this.refreshState();
   },
 
@@ -36,9 +111,11 @@ Page({
       }
     }
 
-    const selectedDialect = state.selectedDialect;
-    const dialectLabel = selectedDialect === 'south' ? '南越' : '北越';
+    const selectedDialect = state.selectedDialect || 'north';
+    const languageInfo = store.getLanguageInfo(selectedDialect);
+    const dialectLabel = languageInfo.name;
     const continueTarget = store.getContinueTarget(selectedDialect);
+    const weakItems = store.getWeakItems(selectedDialect);
 
     let levels = store.getLevels(selectedDialect).map((level) => ({
       ...level,
@@ -57,20 +134,41 @@ Page({
       }
     }
 
+    const totalPassed = levels.reduce((sum, level) => sum + (level.progress.passed || 0), 0);
+    const totalItems = levels.reduce((sum, level) => sum + (level.progress.total || 0), 0);
+    const overallPercent = totalItems ? Math.round((totalPassed / totalItems) * 100) : 75;
+    const currentLevel = levels.find((level) => level.progress.percent < 100) || levels[0] || null;
+    const heroName = state.auth.nickName || '林先生';
+    const avatarText = heroName.slice(0, 1).toUpperCase() || 'V';
+    const unlocked = store.isDialectUnlocked(selectedDialect);
+
     this.setData({
       selectedDialect,
       dialectLabel,
-      unlocked: !!state.product.unlocked,
+      unlocked,
       loggedIn: !!state.auth.loggedIn,
       hasPhone: !!state.auth.phone,
       continueTarget,
-      levels
+      levels,
+      heroName,
+      avatarText,
+      overallPercent,
+      ringStyle: buildRingStyle(overallPercent),
+      outstandingCount: Math.max(totalItems - totalPassed, 0),
+      currentCourseTitle: currentLevel ? currentLevel.name : `${languageInfo.name}发音入门`,
+      currentCourseSubtitle: currentLevel ? currentLevel.subtitle : languageInfo.description,
+      courseButtonText: unlocked ? '继续课程' : '免费试练',
+      tiles: buildTiles({ unlocked, continueTarget, weakCount: weakItems.length })
     });
   },
 
   goContinue() {
     if (!this.data.unlocked) {
-      wx.navigateTo({ url: '/pages/contact/index?from=home' });
+      wx.navigateTo({ url: '/pages/dialect/index' });
+      return;
+    }
+    if (!this.data.continueTarget) {
+      this.goLevels();
       return;
     }
     wx.navigateTo({ url: `/pages/practice/index?itemId=${this.data.continueTarget.itemId}` });
@@ -84,19 +182,21 @@ Page({
     wx.navigateTo({ url: '/pages/levels/index' });
   },
 
-  goRedeem() {
-    if (!this.data.loggedIn) {
-      wx.navigateTo({ url: '/pages/login/index?next=/pages/redeem/index' });
-      return;
-    }
-    if (!this.data.hasPhone) {
-      wx.navigateTo({ url: '/pages/bind-phone/index?next=/pages/redeem/index' });
-      return;
-    }
-    wx.navigateTo({ url: '/pages/redeem/index' });
+  openTile(event) {
+    const action = event.currentTarget.dataset.action;
+    if (action === 'continue') return this.goContinue();
+    if (action === 'levels') return this.goLevels();
+    if (action === 'weakness') return wx.switchTab({ url: '/pages/weakness/index' });
+    if (action === 'trial') return wx.navigateTo({ url: '/pages/dialect/index' });
+    if (action === 'contact') return wx.navigateTo({ url: '/pages/contact/index?from=home' });
+    if (action === 'profile') return wx.switchTab({ url: '/pages/profile/index' });
   },
 
-  goContact() {
-    wx.navigateTo({ url: '/pages/contact/index?from=home' });
+  goProfile() {
+    wx.switchTab({ url: '/pages/profile/index' });
+  },
+
+  goDialect() {
+    wx.navigateTo({ url: '/pages/dialect/index' });
   }
-});
+}, { path: '/pages/landing/index?from=share' }));

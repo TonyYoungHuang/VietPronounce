@@ -1,1 +1,41 @@
-﻿
+.levels-page__content { padding-bottom: 180rpx; }
+.levels-hero { padding-top: 12rpx; }
+.levels-list { display: grid; gap: 28rpx; margin-top: 64rpx; }
+.level-card { position: relative; padding: 38rpx 36rpx 40rpx; overflow: hidden; }
+.level-card::after {
+  content: '';
+  position: absolute;
+  right: -50rpx;
+  bottom: -70rpx;
+  width: 220rpx;
+  height: 220rpx;
+  border-radius: 50%;
+  background: rgba(0, 107, 71, 0.06);
+}
+.level-card__top { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; }
+.level-card__order {
+  width: 70rpx;
+  height: 70rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #895100;
+  background: #fff4e9;
+  font-size: 24rpx;
+  font-weight: 900;
+}
+.level-card__progress {
+  min-height: 52rpx;
+  padding: 0 20rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  color: #006b47;
+  background: rgba(0, 107, 71, 0.1);
+  font-size: 24rpx;
+  font-weight: 900;
+}
+.level-card__title { position: relative; z-index: 1; margin-top: 30rpx; color: var(--on-surface); font-size: 44rpx; font-weight: 900; }
+.level-card__sub { position: relative; z-index: 1; margin-top: 14rpx; color: var(--on-surface-variant); font-size: 27rpx; line-height: 1.65; }
+.level-card__meta { position: relative; z-index: 1; margin-top: 24rpx; color: #895100; font-size: 24rpx; font-weight: 800; line-height: 1.45; }

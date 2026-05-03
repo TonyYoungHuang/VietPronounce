@@ -1,33 +1,58 @@
-﻿<view class="container">
-  <view class="profile-card">
-    <view class="section-title">账号信息</view>
-    <view class="section-subtitle">{{auth.loggedIn ? '已登录' : '未登录'}} · {{auth.phone ? auth.phone : '未绑定手机号'}}</view>
-    <view class="note">昵称：{{auth.nickName || '发音练习访客'}}</view>
-    <button class="btn-primary mt-24" wx:if="{{!auth.loggedIn}}" bindtap="goLogin">立即登录</button>
+<view class="sanctuary-page with-tabbar page-profile">
+  <view class="topbar">
+    <view class="avatar-shell">
+      <view class="avatar-shell__core">{{avatarText}}</view>
+    </view>
+    <view class="topbar-spacer"></view>
+    <view class="topbar-action" bindtap="goDialect">⚙</view>
   </view>
 
-  <view class="panel">
-    <view class="section-title">当前产品状态</view>
-    <view class="section-subtitle">{{product.unlocked ? '完整版已开通，两个体系都可使用。' : '当前未开通完整版。'}}</view>
-    <view class="note">{{product.redeemedCode ? ('兑换码：' + product.redeemedCode) : '暂无兑换码记录'}}</view>
-    <view class="row gap-16 mt-24">
-      <view class="btn-inline" bindtap="goRedeem">兑换码开通</view>
-      <view class="btn-inline" bindtap="goContact">联系顾问</view>
+  <view class="container topbar-offset page-profile__content">
+    <view class="profile-hero">
+      <view class="profile-avatar">
+        <view class="profile-avatar__core"></view>
+      </view>
+      <view class="profile-title">你好，{{nickName}}</view>
+      <view class="profile-subtitle">{{auth.loggedIn ? '学习进度会持续为您保存。' : '登录后可保存进度并激活完整课程。'}}</view>
+      <button class="btn-primary profile-cta" wx:if="{{!auth.loggedIn}}" bindtap="goLogin">立即登录</button>
+      <button class="btn-secondary profile-cta" wx:else bindtap="goLevels">继续课程</button>
+    </view>
+
+    <view class="surface-card profile-card">
+      <view class="profile-card__head">
+        <view>
+          <view class="section-title">高级课程</view>
+          <view class="section-subtitle">{{product.unlocked ? '北越与南越完整体系已解锁。' : '激活后解锁完整课程与复练路径。'}}</view>
+        </view>
+        <view class="{{product.unlocked ? 'badge-success' : 'badge-warn'}}">{{product.unlocked ? '已激活' : '待激活'}}</view>
+      </view>
+      <button class="btn-primary mt-32" wx:if="{{!product.unlocked}}" bindtap="goRedeem">激活高级课程</button>
+      <button class="btn-secondary mt-24" bindtap="goContact">联系顾问</button>
+    </view>
+
+    <view class="section-head profile-section-head">
+      <view class="section-title">发音体系</view>
+      <view class="section-link" bindtap="goDialect">切换</view>
+    </view>
+
+    <view class="profile-dialect-grid">
+      <block wx:for="{{dialects}}" wx:key="id">
+        <view class="surface-wrap profile-dialect-card {{selectedDialect === item.id ? 'profile-dialect-card--active' : ''}}" data-dialect="{{item.id}}" bindtap="switchDialect">
+          <view class="profile-dialect-card__name">{{item.name}}</view>
+          <view class="profile-dialect-card__meta">{{item.meta}}</view>
+          <view class="profile-dialect-card__copy">{{item.description}}</view>
+        </view>
+      </block>
+      <view wx:if="{{false}}" class="surface-wrap profile-dialect-card {{selectedDialect === 'north' ? 'profile-dialect-card--active' : ''}}" data-dialect="north" bindtap="switchDialect">
+        <view class="profile-dialect-card__name">北越</view>
+        <view class="profile-dialect-card__meta">NORTHERN</view>
+        <view class="profile-dialect-card__copy">标准感更强，声调边界清晰。</view>
+      </view>
+      <view wx:if="{{false}}" class="surface-wrap profile-dialect-card {{selectedDialect === 'south' ? 'profile-dialect-card--active' : ''}}" data-dialect="south" bindtap="switchDialect">
+        <view class="profile-dialect-card__name">南越</view>
+        <view class="profile-dialect-card__meta">SOUTHERN</view>
+        <view class="profile-dialect-card__copy">语流更顺，口感更自然。</view>
+      </view>
     </view>
   </view>
-
-  <view class="panel">
-    <view class="section-title">发音体系</view>
-    <view class="section-subtitle">购买后北越和南越都能用，但两边的进度和成绩是分开的。</view>
-    <view class="row gap-16 mt-24">
-      <view class="btn-inline" data-dialect="north" bindtap="switchDialect">{{selectedDialect === 'north' ? '当前：北越' : '切到北越'}}</view>
-      <view class="btn-inline" data-dialect="south" bindtap="switchDialect">{{selectedDialect === 'south' ? '当前：南越' : '切到南越'}}</view>
-    </view>
-  </view>
-
-  <view class="panel">
-    <view class="section-title">学习入口</view>
-    <button class="btn-ghost mt-24" bindtap="goLevels">查看等级路径</button>
-  </view>
-  <view class="footer-space"></view>
 </view>

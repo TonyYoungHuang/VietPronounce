@@ -1,25 +1,47 @@
-﻿const store = require('../../utils/store');
+const store = require('../../utils/store');
 const appApi = require('../../services/app-api');
+const syncTabBar = require('../../utils/tab-bar');
+const { attachShare } = require('../../utils/share');
 
-Page({
+Page(attachShare({
   data: {
     auth: {},
     product: {},
-    selectedDialect: 'north'
+    selectedDialect: 'north',
+    dialects: [],
+    avatarText: 'V',
+    nickName: '学习者'
   },
 
   async onShow() {
+    syncTabBar(this, 'pages/profile/index');
     const userId = store.getUserId();
     if (userId) {
       try {
         const remoteUser = await appApi.fetchUserState(userId);
         store.hydrateFromRemoteUser(remoteUser);
       } catch (error) {
-        // keep local fallback
+        // keep local state
       }
     }
     const state = store.getState();
-    this.setData({ auth: state.auth, product: state.product, selectedDialect: state.selectedDialect });
+    const nickName = state.auth.nickName || '学习者';
+    this.setData({
+      auth: state.auth,
+      product: state.product,
+      selectedDialect: state.selectedDialect,
+      dialects: store.getDialectIds().map((dialect) => {
+        const meta = store.getLanguageInfo(dialect);
+        return {
+          id: dialect,
+          name: meta.name,
+          meta: meta.englishName || meta.shortName || dialect,
+          description: meta.description
+        };
+      }),
+      avatarText: nickName.slice(0, 1).toUpperCase() || 'V',
+      nickName
+    });
   },
 
   async switchDialect(event) {
@@ -32,12 +54,12 @@ Page({
         const remoteUser = await appApi.updateDialect(userId, dialect);
         store.hydrateFromRemoteUser(remoteUser);
       } catch (error) {
-        wx.showToast({ title: '后端暂不可用，仅在本地切换成功', icon: 'none' });
+        wx.showToast({ title: '已切换，稍后自动同步', icon: 'none' });
       }
     }
 
     this.setData({ selectedDialect: dialect });
-    wx.showToast({ title: `已切到${dialect === 'south' ? '南越' : '北越'}`, icon: 'none' });
+    wx.showToast({ title: `已切到${store.getDialectLabel(dialect)}`, icon: 'none' });
   },
 
   goLogin() {
@@ -54,5 +76,9 @@ Page({
 
   goLevels() {
     wx.navigateTo({ url: '/pages/levels/index' });
+  },
+
+  goDialect() {
+    wx.navigateTo({ url: '/pages/dialect/index' });
   }
-});
+}, { path: '/pages/landing/index?from=share' }));

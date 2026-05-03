@@ -1,6 +1,8 @@
 const { getScoreApiConfig } = require('../config/index');
 const { buildUrl, uploadFile } = require('./request');
 const { scoreRecording } = require('../utils/engine');
+const { buildVietnameseDimensions, normalizePronunciationDimensions } = require('../utils/pronunciation-dimensions');
+const { getLanguageMeta } = require('../data/content-standard');
 
 function parsePayload(raw) {
   if (typeof raw === 'string') {
@@ -65,6 +67,8 @@ function buildRequestFormData(context, options, config) {
 
   const values = {
     dialect: dialectValues[context.dialect] || context.dialect,
+    language: getLanguageMeta(context.dialect).locale,
+    locale: getLanguageMeta(context.dialect).locale,
     itemId: item.id,
     transcript: item.text,
     itemType: itemTypeValues[item.type] || item.type,
@@ -97,7 +101,7 @@ function normalizeScorePayload(payload, config) {
     throw new Error('评分接口返回结构不完整');
   }
 
-  return {
+  const baseScore = {
     total,
     completeness,
     accuracy,
@@ -105,7 +109,17 @@ function normalizeScorePayload(payload, config) {
     passed: toBoolean(getMappedValue(source, responseMapping, 'passed'), total >= 78),
     issueIndices: normalizeIssueIndices(getMappedValue(source, responseMapping, 'issueIndices')),
     durationMs: Number(getMappedValue(source, responseMapping, 'durationMs') || 0),
+    scoreSource: getMappedValue(source, responseMapping, 'scoreSource'),
     rawScoreData: payload
+  };
+  const mappedDimensions = getMappedValue(source, responseMapping, 'pronunciationDimensions') || source.pronunciationDimensions || source.dimensions;
+  return {
+    ...baseScore,
+    pronunciationDimensions: normalizePronunciationDimensions(mappedDimensions, {
+      dialect: payload.dialect,
+      item: payload.item || {},
+      ...baseScore
+    })
   };
 }
 
@@ -140,17 +154,31 @@ async function requestRemoteScore(context, options) {
     throw new Error(responseMessage || '评分接口返回结构不完整');
   }
 
+  const normalized = normalizeScorePayload(payload, config);
   return {
-    ...normalizeScorePayload(payload, config),
-    scoreSource: config.provider || 'remote'
+    ...normalized,
+    scoreSource: normalized.scoreSource || config.provider || 'remote',
+    pronunciationDimensions: normalizePronunciationDimensions(normalized.pronunciationDimensions, {
+      dialect: context.dialect,
+      item: context.item,
+      ...normalized
+    })
   };
 }
 
-function buildMockScore(context, options) {
-  return {
+function buildLocalScore(context, options) {
+  const score = {
     ...scoreRecording(context.item, options.durationMs || 2000, context.attemptCount || 1),
-    scoreSource: 'mock',
+    scoreSource: 'client-baseline',
     rawScoreData: null
+  };
+  return {
+    ...score,
+    pronunciationDimensions: buildVietnameseDimensions({
+      dialect: context.dialect,
+      item: context.item,
+      ...score
+    })
   };
 }
 
@@ -158,16 +186,16 @@ async function scoreFixedContent(context, options = {}) {
   const config = getScoreApiConfig();
   const prefersRemote = config.mode === 'remote';
   if (!prefersRemote) {
-    return buildMockScore(context, options);
+    return buildLocalScore(context, options);
   }
 
   try {
     return await requestRemoteScore(context, options);
   } catch (error) {
-    if (!config.useMockFallback) {
+    if (config.useLocalFallback === false) {
       throw error;
     }
-    return buildMockScore(context, options);
+    return buildLocalScore(context, options);
   }
 }
 

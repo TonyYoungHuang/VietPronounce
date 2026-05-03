@@ -1,21 +1,18 @@
-﻿const crypto = require('crypto');
+const crypto = require('crypto');
 const { levels: levelMeta } = require('../../data/mock');
+const { DIALECTS, getLanguageMeta, normalizeDialect } = require('../../data/content-standard');
+const { assertCatalogShape, assertTrialShape } = require('../../utils/content-validate');
+const { filterCatalogForRelease, filterTrialForRelease, hasPlaceholder } = require('../../utils/content-filter');
 const store = require('./store');
-
-const DIALECTS = ['north', 'south'];
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
-function normalizeDialect(dialect) {
-  return dialect === 'south' ? 'south' : 'north';
-}
-
 function inferDialectFromId(value, fallback = 'north') {
   if (typeof value !== 'string') return normalizeDialect(fallback);
-  if (value.startsWith('south')) return 'south';
-  if (value.startsWith('north')) return 'north';
+  const matched = DIALECTS.find((dialect) => value.startsWith(dialect));
+  if (matched) return matched;
   return normalizeDialect(fallback);
 }
 
@@ -39,14 +36,20 @@ function getCatalog() {
   return store.readCatalog();
 }
 
+function getPublicCatalog() {
+  return filterCatalogForRelease(getCatalog());
+}
+
 function getTrialCollection() {
   return store.readTrial();
 }
 
 function getCatalogItemIndex(catalog) {
-  const index = { north: {}, south: {} };
+  const index = {};
   for (const dialect of DIALECTS) {
+    index[dialect] = {};
     const dialectCatalog = catalog[dialect];
+    if (!dialectCatalog || !Array.isArray(dialectCatalog.levels)) continue;
     for (const level of dialectCatalog.levels) {
       for (const lesson of level.lessons) {
         for (const item of lesson.items) {
@@ -75,25 +78,27 @@ function createDefaultDialectProgress(catalog, dialect) {
 }
 
 function createDefaultUser(userId, nickName) {
-  const catalog = getCatalog();
+  const catalog = getPublicCatalog();
   return {
     userId,
     selectedDialect: 'north',
     auth: {
       loggedIn: true,
+      userId,
       nickName: sanitizeNickName(nickName),
       phone: ''
     },
     product: {
       unlocked: false,
+      unlockedDialects: [],
       redeemedCode: '',
       redeemedAt: ''
     },
     latestPracticeResult: null,
-    dialects: {
-      north: createDefaultDialectProgress(catalog, 'north'),
-      south: createDefaultDialectProgress(catalog, 'south')
-    },
+    dialects: DIALECTS.reduce((accumulator, dialect) => {
+      accumulator[dialect] = createDefaultDialectProgress(catalog, dialect);
+      return accumulator;
+    }, {}),
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };
@@ -101,7 +106,7 @@ function createDefaultUser(userId, nickName) {
 
 function hydrateScoreResult(result, fallbackDialect) {
   if (!result) return null;
-  const catalog = getCatalog();
+  const catalog = getPublicCatalog();
   const index = getCatalogItemIndex(catalog);
   const dialect = normalizeDialect(result.dialect || inferDialectFromId(result.itemId, fallbackDialect));
   const catalogItem = result.itemId ? index[dialect][result.itemId] : null;
@@ -117,6 +122,8 @@ function hydrateScoreResult(result, fallbackDialect) {
     levelId: catalogItem ? catalogItem.levelId : result.levelId,
     demoAudio: catalogItem ? catalogItem.demoAudio : result.demoAudio,
     segments,
+    audioQuality: result.audioQuality || null,
+    pronunciationDimensions: Array.isArray(result.pronunciationDimensions) ? result.pronunciationDimensions : [],
     issueIndices: Array.isArray(result.issueIndices) ? result.issueIndices.filter((indexValue) => Number.isInteger(indexValue) && indexValue >= 0 && indexValue < segments.length) : []
   };
 }
@@ -141,7 +148,7 @@ function sanitizeDialectProgress(progress, dialect, catalog) {
 }
 
 function sanitizeUser(user) {
-  const catalog = getCatalog();
+  const catalog = getPublicCatalog();
   const fallbackUser = createDefaultUser(user.userId || crypto.randomUUID(), user?.auth?.nickName);
   const selectedDialect = normalizeDialect(user.selectedDialect || fallbackUser.selectedDialect);
   const nextUser = {
@@ -158,10 +165,10 @@ function sanitizeUser(user) {
       ...(user.product || {})
     },
     latestPracticeResult: hydrateScoreResult(user.latestPracticeResult, selectedDialect),
-    dialects: {
-      north: sanitizeDialectProgress(user?.dialects?.north, 'north', catalog),
-      south: sanitizeDialectProgress(user?.dialects?.south, 'south', catalog)
-    },
+    dialects: DIALECTS.reduce((accumulator, dialect) => {
+      accumulator[dialect] = sanitizeDialectProgress(user?.dialects?.[dialect], dialect, catalog);
+      return accumulator;
+    }, {}),
     createdAt: user.createdAt || fallbackUser.createdAt,
     updatedAt: user.updatedAt || fallbackUser.updatedAt
   };
@@ -209,7 +216,7 @@ function createUser(nickName) {
   return saveUser(user);
 }
 
-function mockLogin(nickName) {
+function loginWithWechat(nickName) {
   return createUser(nickName || '发音练习学员');
 }
 
@@ -235,7 +242,8 @@ function updateDialect(userId, dialect) {
 
 function getTrial(dialect) {
   const trials = getTrialCollection();
-  return clone(trials[normalizeDialect(dialect)] || trials.north);
+  const normalizedDialect = normalizeDialect(dialect);
+  return clone(filterTrialForRelease({ [normalizedDialect]: trials[normalizedDialect] || trials.north })[normalizedDialect]);
 }
 
 function redeemProduct(userId, code) {
@@ -244,11 +252,6 @@ function redeemProduct(userId, code) {
 
   const normalizedCode = String(code || '').trim().toUpperCase();
   const user = requireUser(userId);
-  if (user.product.unlocked) {
-    const error = new Error('当前账号已经开通完整版，无需重复兑换');
-    error.statusCode = 400;
-    throw error;
-  }
 
   const redeemCodes = store.readRedeemCodes();
   const entry = redeemCodes.find((item) => item.code === normalizedCode);
@@ -264,7 +267,26 @@ function redeemProduct(userId, code) {
   }
 
   const redeemedAt = new Date().toISOString();
-  user.product.unlocked = true;
+  const codeDialect = DIALECTS.includes(entry.dialect) ? entry.dialect : 'all';
+  const unlockedDialects = new Set(Array.isArray(user.product.unlockedDialects) ? user.product.unlockedDialects : []);
+  if (user.product.unlocked || codeDialect === 'all') {
+    if (user.product.unlocked) {
+      const error = new Error('当前账号已经开通完整版，无需重复兑换');
+      error.statusCode = 400;
+      throw error;
+    }
+    user.product.unlocked = true;
+    DIALECTS.forEach((dialect) => unlockedDialects.add(dialect));
+  } else {
+    if (unlockedDialects.has(codeDialect)) {
+      const error = new Error('当前语种课程已经开通，无需重复兑换');
+      error.statusCode = 400;
+      throw error;
+    }
+    unlockedDialects.add(codeDialect);
+    user.selectedDialect = codeDialect;
+  }
+  user.product.unlockedDialects = Array.from(unlockedDialects);
   user.product.redeemedCode = normalizedCode;
   user.product.redeemedAt = redeemedAt;
   entry.used = true;
@@ -279,8 +301,9 @@ function redeemProduct(userId, code) {
 function getLevels(userId, dialect) {
   const user = requireUser(userId);
   const normalizedDialect = normalizeDialect(dialect || user.selectedDialect);
-  const catalog = getCatalog();
+  const catalog = getPublicCatalog();
   const results = user.dialects[normalizedDialect].itemResults;
+  const languageMeta = getLanguageMeta(normalizedDialect);
 
   return catalog[normalizedDialect].levels.map((level) => {
     const itemIds = level.lessons.flatMap((lesson) => lesson.items.map((item) => item.id));
@@ -290,7 +313,7 @@ function getLevels(userId, dialect) {
       id: level.id,
       name: level.name,
       subtitle: meta.subtitle || '',
-      accent: meta.accent || '',
+      accent: meta.accent || languageMeta.shortName,
       lessonCount: level.lessons.length,
       itemCount: itemIds.length,
       progress: {
@@ -306,7 +329,7 @@ function getLessons(userId, dialect, levelId) {
   assertNonEmptyString(levelId, '缺少等级 ID');
   const user = requireUser(userId);
   const normalizedDialect = normalizeDialect(dialect || user.selectedDialect);
-  const catalog = getCatalog();
+  const catalog = getPublicCatalog();
   const level = catalog[normalizedDialect].levels.find((item) => item.id === levelId);
   if (!level) {
     const error = new Error('找不到对应等级');
@@ -342,9 +365,36 @@ function normalizeScore(score) {
   }
   normalized.passed = typeof normalized.passed === 'boolean' ? normalized.passed : normalized.total >= 78;
   normalized.issueIndices = Array.isArray(normalized.issueIndices) ? normalized.issueIndices : [];
+  normalized.pronunciationDimensions = Array.isArray(normalized.pronunciationDimensions) ? normalized.pronunciationDimensions : [];
   normalized.attemptCount = Number.isNaN(normalized.attemptCount) ? 1 : normalized.attemptCount || 1;
   normalized.durationMs = Number.isNaN(normalized.durationMs) ? 0 : normalized.durationMs || 0;
   return normalized;
+}
+
+function createAttemptRecord(payload) {
+  return {
+    total: payload.total,
+    completeness: payload.completeness,
+    accuracy: payload.accuracy,
+    fluency: payload.fluency,
+    passed: payload.passed,
+    issueIndices: payload.issueIndices || [],
+    pronunciationDimensions: payload.pronunciationDimensions || [],
+    durationMs: payload.durationMs || 0,
+    scoreSource: payload.scoreSource || '',
+    practicedAt: payload.practicedAt || new Date().toISOString()
+  };
+}
+
+function attachAttemptHistory(payload, previousResult) {
+  const previousAttempts = Array.isArray(previousResult && previousResult.attempts) ? previousResult.attempts : [];
+  const previousScore = previousResult && Number.isFinite(Number(previousResult.total)) ? Number(previousResult.total) : null;
+  return {
+    ...payload,
+    previousScore,
+    scoreDelta: previousScore === null ? 0 : payload.total - previousScore,
+    attempts: [createAttemptRecord(payload), ...previousAttempts].slice(0, 5)
+  };
 }
 
 function saveScore(userId, dialect, itemId, score) {
@@ -353,7 +403,7 @@ function saveScore(userId, dialect, itemId, score) {
 
   const user = requireUser(userId);
   const normalizedDialect = normalizeDialect(dialect || user.selectedDialect);
-  const catalogIndex = getCatalogItemIndex(getCatalog());
+  const catalogIndex = getCatalogItemIndex(getPublicCatalog());
   const catalogItem = catalogIndex[normalizedDialect][itemId];
   if (!catalogItem) {
     const error = new Error('找不到对应练习项');
@@ -362,7 +412,7 @@ function saveScore(userId, dialect, itemId, score) {
   }
 
   const normalizedScore = normalizeScore(score);
-  const payload = {
+  const basePayload = {
     ...normalizedScore,
     dialect: normalizedDialect,
     itemId: catalogItem.id,
@@ -373,10 +423,14 @@ function saveScore(userId, dialect, itemId, score) {
     demoAudio: catalogItem.demoAudio,
     segments: catalogItem.segments,
     practicedAt: score.practicedAt || new Date().toISOString(),
-    scoreSource: score.scoreSource || 'mock',
+    audioQuality: score.audioQuality || null,
+    pronunciationDimensions: Array.isArray(score.pronunciationDimensions) ? score.pronunciationDimensions : [],
+    scoreSource: score.scoreSource || 'standard',
     rawScoreData: score.rawScoreData || null,
     recordAudio: score.recordAudio || ''
   };
+  const previousResult = user.dialects[normalizedDialect].itemResults[itemId] || null;
+  const payload = attachAttemptHistory(basePayload, previousResult);
   payload.issueIndices = payload.issueIndices.filter((indexValue) => Number.isInteger(indexValue) && indexValue >= 0 && indexValue < payload.segments.length);
 
   user.selectedDialect = normalizedDialect;
@@ -393,6 +447,7 @@ function getWeakness(userId, dialect) {
   const user = requireUser(userId);
   const normalizedDialect = normalizeDialect(dialect || user.selectedDialect);
   return Object.values(user.dialects[normalizedDialect].itemResults)
+    .filter((item) => !hasPlaceholder(item.itemText) && !hasPlaceholder(item.itemTranslation))
     .filter((item) => !item.passed || item.total < 82)
     .sort((left, right) => left.total - right.total)
     .slice(0, 12);
@@ -409,23 +464,51 @@ function listRedeemCodes() {
 
 function createRedeemCode(input = {}) {
   const codes = store.readRedeemCodes();
-  const code = String(input.code || `VIET-${Date.now()}`).trim().toUpperCase();
-  assertNonEmptyString(code, '兑换码不能为空');
-  if (codes.some((item) => item.code === code)) {
-    const error = new Error('兑换码已存在');
-    error.statusCode = 400;
-    throw error;
+  const count = Math.max(1, Math.min(Number(input.count || 1), 200));
+  const batchId = String(input.batchId || `BATCH-${Date.now()}`).trim().toUpperCase();
+  const prefix = String(input.prefix || 'VER').trim().toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10) || 'VER';
+  const note = String(input.note || '').trim();
+  const product = String(input.product || 'premium').trim() || 'premium';
+  const dialect = DIALECTS.includes(input.dialect) ? input.dialect : 'all';
+  const createdAt = new Date().toISOString();
+  const existing = new Set(codes.map((item) => item.code));
+  const generated = [];
+
+  function makeCode() {
+    if (input.code && count === 1) {
+      return String(input.code).trim().toUpperCase();
+    }
+    return `${prefix}-${new Date().getFullYear()}-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
   }
 
-  const next = {
-    code,
-    used: false,
-    usedBy: '',
-    usedAt: ''
-  };
-  codes.unshift(next);
+  while (generated.length < count) {
+    const code = makeCode();
+    assertNonEmptyString(code, '兑换码不能为空');
+    if (existing.has(code)) {
+      if (input.code && count === 1) {
+        const error = new Error('兑换码已存在');
+        error.statusCode = 400;
+        throw error;
+      }
+      continue;
+    }
+    existing.add(code);
+    generated.push({
+      code,
+      product,
+      dialect,
+      batchId,
+      note,
+      createdAt,
+      used: false,
+      usedBy: '',
+      usedAt: ''
+    });
+  }
+
+  codes.unshift(...generated);
   store.writeRedeemCodes(codes);
-  return next;
+  return count === 1 ? generated[0] : { batchId, count: generated.length, codes: generated };
 }
 
 function listUsers() {
@@ -434,73 +517,29 @@ function listUsers() {
     .sort((left, right) => String(right.updatedAt).localeCompare(String(left.updatedAt)));
 }
 
-function validateCatalogItem(item, messagePrefix) {
-  for (const field of ['id', 'type', 'text', 'translation', 'hint', 'demoAudio']) {
-    assertNonEmptyString(item && item[field], `${messagePrefix} 缺少 ${field}`);
-  }
-  if (!Array.isArray(item.segments)) {
-    const error = new Error(`${messagePrefix} 的 segments 必须是数组`);
-    error.statusCode = 400;
-    throw error;
-  }
-}
-
 function validateCatalog(value) {
-  if (!value || typeof value !== 'object') {
-    const error = new Error('课程目录必须是对象');
-    error.statusCode = 400;
-    throw error;
-  }
-
-  for (const dialect of DIALECTS) {
-    const dialectCatalog = value[dialect];
-    if (!dialectCatalog || !Array.isArray(dialectCatalog.levels) || !dialectCatalog.levels.length) {
-      const error = new Error(`${dialect} 目录缺少 levels`);
-      error.statusCode = 400;
-      throw error;
-    }
-    for (const level of dialectCatalog.levels) {
-      assertNonEmptyString(level.id, `${dialect} 等级缺少 id`);
-      assertNonEmptyString(level.name, `${dialect} 等级缺少 name`);
-      if (!Array.isArray(level.lessons) || !level.lessons.length) {
-        const error = new Error(`${dialect} 等级 ${level.id} 缺少 lessons`);
-        error.statusCode = 400;
-        throw error;
-      }
-      for (const lesson of level.lessons) {
-        assertNonEmptyString(lesson.id, `${dialect} 课时缺少 id`);
-        assertNonEmptyString(lesson.title, `${dialect} 课时缺少 title`);
-        if (!Array.isArray(lesson.items) || !lesson.items.length) {
-          const error = new Error(`${dialect} 课时 ${lesson.id} 缺少 items`);
-          error.statusCode = 400;
-          throw error;
-        }
-        lesson.items.forEach((item, itemIndex) => validateCatalogItem(item, `${dialect} / ${lesson.id} / item-${itemIndex + 1}`));
-      }
-    }
-  }
-}
-
-function validateTrialItem(item, dialect) {
-  const required = ['id', 'lessonId', 'levelId', 'type', 'text', 'translation', 'hint', 'demoAudio'];
-  for (const field of required) {
-    assertNonEmptyString(item && item[field], `${dialect} 试听内容缺少 ${field}`);
-  }
-  if (!Array.isArray(item.segments)) {
-    const error = new Error(`${dialect} 试听内容的 segments 必须是数组`);
-    error.statusCode = 400;
+  try {
+    assertCatalogShape(value);
+  } catch (error) {
+    error.statusCode = error.statusCode || 400;
     throw error;
   }
 }
 
 function validateTrialCollection(value) {
-  if (!value || typeof value !== 'object') {
-    const error = new Error('试听内容必须是对象');
-    error.statusCode = 400;
+  try {
+    if (!value || typeof value !== 'object') {
+      const error = new Error('试听内容必须是对象');
+      error.statusCode = 400;
+      throw error;
+    }
+    const catalog = getCatalog();
+    for (const dialect of DIALECTS) {
+      assertTrialShape(value[dialect], dialect, catalog);
+    }
+  } catch (error) {
+    error.statusCode = error.statusCode || 400;
     throw error;
-  }
-  for (const dialect of DIALECTS) {
-    validateTrialItem(value[dialect], dialect);
   }
 }
 
@@ -534,8 +573,9 @@ try {
 
 module.exports = {
   getCatalog,
+  getPublicCatalog,
   getTrial,
-  mockLogin,
+  loginWithWechat,
   getUser,
   requireUser,
   saveUser,

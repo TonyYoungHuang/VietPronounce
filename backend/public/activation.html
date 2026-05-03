@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>激活码发放后台</title>
+    <link rel="stylesheet" href="/activation/activation.css" />
+  </head>
+  <body>
+    <main class="layout">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Activation Console</p>
+          <h1>激活码发放后台</h1>
+          <p class="subtitle">选择语种、数量和备注后直接生成。激活码会立即写入服务器，用户拿到后就能在小程序兑换。</p>
+        </div>
+        <div id="status" class="status info">准备就绪</div>
+      </section>
+
+      <section id="auth-card" class="auth-card">
+        <div>
+          <h2>管理员登录</h2>
+          <p id="auth-hint">请输入后台密码后再生成激活码。</p>
+        </div>
+        <div class="login-row">
+          <input id="admin-password" type="password" placeholder="管理员密码" />
+          <button id="admin-login" class="btn btn-primary">登录</button>
+          <button id="admin-logout" class="btn hidden">退出</button>
+        </div>
+      </section>
+
+      <section id="workbench" class="grid locked">
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>生成激活码</h2>
+              <p>单个码可手动指定；批量生成时请留空指定码。</p>
+            </div>
+          </div>
+
+          <div class="form">
+            <label>
+              <span>开通语种</span>
+              <select id="dialect">
+                <option value="all">全部语种</option>
+                <option value="north">北越</option>
+                <option value="south">南越</option>
+                <option value="thai">泰语</option>
+                <option value="malay">马来语</option>
+                <option value="indo">印尼语</option>
+                <option value="tagalog">菲律宾语</option>
+                <option value="hindi">印地语</option>
+                <option value="tamil">泰米尔语</option>
+              </select>
+            </label>
+
+            <div class="two">
+              <label>
+                <span>前缀</span>
+                <input id="prefix" value="ASIA" maxlength="10" />
+              </label>
+              <label>
+                <span>数量</span>
+                <input id="count" type="number" value="1" min="1" max="200" />
+              </label>
+            </div>
+
+            <label>
+              <span>指定激活码</span>
+              <input id="code" placeholder="可留空自动生成，如 THAI-VIP-001" />
+            </label>
+
+            <label>
+              <span>备注</span>
+              <input id="note" placeholder="例如：淘宝订单 / 小红书客户 / 线下课" />
+            </label>
+
+            <div class="actions">
+              <button id="create" class="btn btn-primary">生成并写入服务器</button>
+              <button id="copy-latest" class="btn">复制本次生成</button>
+              <button id="refresh" class="btn">刷新记录</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>本次生成</h2>
+              <p id="latest-summary">还没有生成。</p>
+            </div>
+          </div>
+          <textarea id="latest-output" readonly placeholder="生成后，这里会显示可直接发给用户的激活码。"></textarea>
+        </article>
+      </section>
+
+      <section id="history-panel" class="panel history locked">
+        <div class="panel-head">
+          <div>
+            <h2>服务器激活码记录</h2>
+            <p>这里展示服务器当前保存的最新激活码。</p>
+          </div>
+          <button id="copy-available" class="btn">复制全部可用码</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>激活码</th>
+                <th>语种</th>
+                <th>批次</th>
+                <th>备注</th>
+                <th>状态</th>
+                <th>使用者</th>
+                <th>时间</th>
+              </tr>
+            </thead>
+            <tbody id="code-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="/activation/activation.js"></script>
+  </body>
+</html>

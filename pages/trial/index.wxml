@@ -1,31 +1,105 @@
-﻿<view class="container">
-  <view class="hero-card">
-    <view class="eyebrow">免费试练 · {{dialect === 'north' ? '北越' : '南越'}}</view>
-    <view class="title">先读一条，看看它怎么纠正你。</view>
-    <view class="subtitle">这一条会完整展示评分结果与错误定位，帮助你判断产品是否值得继续深入。</view>
+<view class="sanctuary-page practice-page" wx:if="{{item}}">
+  <view class="topbar">
+    <view class="topbar-action" bindtap="closePage">×</view>
+    <view class="topbar-spacer"></view>
+    <view class="topbar-action">⋯</view>
   </view>
 
-  <view class="panel">
-    <view class="badge">{{item.type === 'sentence' ? '短句' : item.type}}</view>
-    <view class="title" style="font-size: 52rpx;">{{item.text}}</view>
-    <view class="section-subtitle">{{item.translation}}</view>
-    <view class="note">{{item.hint}}</view>
-    <view class="row gap-16 mt-24">
-      <view class="btn-inline" bindtap="playDemo">听标准音</view>
-      <view class="btn-inline" bindtap="replayRecord">听我的录音</view>
+  <view class="container topbar-offset practice-page__content">
+    <view class="offline-banner" wx:if="{{offlineNotice}}">{{offlineNotice}}</view>
+    <view class="practice-progress-head">
+      <view class="practice-progress-head__label">{{progressLabel}}</view>
+      <view class="practice-progress-head__value">{{progressPercent}}%</view>
+    </view>
+    <view class="practice-progress-bar"><view class="practice-progress-bar__value" style="width: {{progressPercent}}%;"></view></view>
+
+    <view class="surface-card practice-card">
+      <view class="practice-card__mark">↗</view>
+      <view class="practice-card__text">{{item.text}}</view>
+      <view class="practice-card__guide">{{guideText}}</view>
+      <view class="practice-card__dots"><view class="practice-card__dot"></view><view class="practice-card__dot"></view><view class="practice-card__dot"></view></view>
+      <view class="practice-card__meaning">
+        <view class="practice-card__meaning-title">中文含义</view>
+        <view class="practice-card__meaning-copy">{{item.translation}}</view>
+      </view>
+    </view>
+
+    <view class="practice-audio-grid">
+      <button class="glass-panel practice-audio-card" bindtap="playDemo">
+        <view class="small-play-button">▶</view>
+        <view>
+          <view class="practice-audio-card__label">整句播放</view>
+          <view class="practice-audio-card__title">标准范读</view>
+        </view>
+      </button>
+      <button class="glass-panel practice-audio-card practice-audio-card--slow" bindtap="playSlowDemo">
+        <view class="small-play-button small-play-button--warm">慢</view>
+        <view>
+          <view class="practice-audio-card__label">慢速范读</view>
+          <view class="practice-audio-card__title">放慢跟读</view>
+        </view>
+      </button>
+    </view>
+
+    <view class="surface-card syllable-coach">
+      <view class="syllable-coach__head">
+        <view>
+          <view class="syllable-coach__eyebrow">免费试练 · 分音节</view>
+          <view class="syllable-coach__title">逐段听，再逐段跟读</view>
+        </view>
+        <view class="syllable-coach__count">{{guidedSegments.length}} 段</view>
+      </view>
+      <view class="syllable-coach__list">
+        <block wx:for="{{guidedSegments}}" wx:key="label">
+          <view class="syllable-row {{activeSegmentIndex == index ? 'syllable-row--active' : ''}}">
+            <view class="syllable-row__index">{{item.label}}</view>
+            <view class="syllable-row__body">
+              <view class="syllable-row__text">{{item.text}}</view>
+              <view class="syllable-row__tip">{{item.tip}}</view>
+              <view class="syllable-row__actions">
+                <button class="syllable-row__button" data-index="{{index}}" bindtap="playSegment">播放</button>
+                <button class="syllable-row__button syllable-row__button--slow" data-index="{{index}}" bindtap="playSlowSegment">慢速</button>
+              </view>
+            </view>
+          </view>
+        </block>
+      </view>
+      <view class="syllable-coach__hint">{{activeSegmentTip}}</view>
+    </view>
+
+    <view class="practice-recorder">
+      <view class="record-preflight">
+        <view class="record-preflight__title">录音前准备</view>
+        <view class="record-preflight__copy">{{preflightText}}</view>
+      </view>
+      <button class="record-button {{recording ? 'record-button--active' : ''}}" bindtouchstart="startHoldRecord" bindtouchend="stopHoldRecord" bindtouchcancel="stopHoldRecord" aria-label="{{recording ? '松开结束录音' : '按住开始录音'}}">
+        <view wx:if="{{recording}}" class="record-stop-icon"></view>
+        <view wx:else class="record-mic-icon">
+          <view class="record-mic-icon__head"></view>
+          <view class="record-mic-icon__arc"></view>
+          <view class="record-mic-icon__stem"></view>
+          <view class="record-mic-icon__base"></view>
+        </view>
+      </button>
+      <view class="record-wave {{recording ? 'record-wave--active' : ''}}">
+        <block wx:for="{{volumeBars}}" wx:key="*this">
+          <view class="record-wave__bar" style="height: {{item}}rpx;"></view>
+        </block>
+      </view>
+      <view class="practice-recorder__title">{{recording ? '松开结束录音' : '长按开始跟读'}}</view>
+      <view class="practice-recorder__hint">{{recordingHint}}</view>
+      <view class="practice-recorder__copy">这一条会直接展示机器纠音结果，帮助你判断完整版是否适合自己。</view>
+      <view class="practice-recorder__actions">
+        <button class="btn-secondary" bindtap="replayRecord">听我的录音</button>
+        <button class="btn-ghost" wx:if="{{hasRecording}}" bindtap="resetRecord">删除重录</button>
+      </view>
     </view>
   </view>
 
-  <view class="panel">
-    <view class="section-title">录音区</view>
-    <view class="section-subtitle">先听标准音，再模仿录音。录完后直接提交评分。</view>
-    <button class="{{recording ? 'btn-danger' : 'btn-primary'}} mt-24" bindtap="toggleRecording">{{recording ? '结束录音' : '开始录音'}}</button>
-    <button class="btn-ghost mt-16" bindtap="resetRecord" wx:if="{{hasRecording}}">删除并重录</button>
-    <view class="note" wx:if="{{hasRecording}}">已录音，可提交评分。</view>
+  <view class="floating-action-bar">
+    <view class="floating-action-bar--row">
+      <button class="btn-ghost" bindtap="resetRecord">重录</button>
+      <button class="btn-primary" loading="{{scoreLoading}}" bindtap="submitTrial">提交评分</button>
+    </view>
   </view>
-
-  <view class="cta-card">
-    <button class="btn-secondary" loading="{{scoreLoading}}" bindtap="submitTrial">提交评分</button>
-  </view>
-  <view class="footer-space"></view>
 </view>

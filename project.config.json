@@ -1,15 +1,80 @@
-﻿{
-  "appid": "touristappid",
-  "compileType": "miniprogram",
-  "libVersion": "3.6.1",
-  "miniprogramRoot": "./",
-  "projectname": "vietnamese-pronunciation-coach",
+{
   "setting": {
     "es6": true,
-    "enhance": true,
-    "minified": true,
     "postcss": true,
-    "urlCheck": false
+    "minified": true,
+    "uglifyFileName": false,
+    "enhance": true,
+    "packNpmRelationList": [],
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    },
+    "useCompilerPlugins": false,
+    "minifyWXML": true,
+    "compileWorklet": true,
+    "uploadWithSourceMap": true,
+    "packNpmManually": false,
+    "minifyWXSS": true,
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "condition": false,
+    "swc": false,
+    "disableSWC": true
   },
-  "condition": {}
+  "compileType": "miniprogram",
+  "simulatorPluginLibVersion": {},
+  "packOptions": {
+    "ignore": [
+      {
+        "type": "folder",
+        "value": "backend"
+      },
+      {
+        "type": "folder",
+        "value": "deploy"
+      },
+      {
+        "type": "folder",
+        "value": "UI"
+      },
+      {
+        "type": "folder",
+        "value": "tools"
+      },
+      {
+        "type": "file",
+        "value": "data/expanded-curriculum.js"
+      },
+      {
+        "type": "file",
+        "value": "data/curriculum-plan.js"
+      },
+      {
+        "type": "file",
+        "value": "data/content-template.js"
+      },
+      {
+        "type": "file",
+        "value": "data/beginner-mirror-skeleton.js"
+      },
+      {
+        "type": "file",
+        "value": "Gemini_Generated_Image_3brf0e3brf0e3brf.png"
+      },
+      {
+        "type": "file",
+        "value": "内容生产标准-v1.md"
+      },
+      {
+        "type": "file",
+        "value": "零基础镜像内容骨架-v1.md"
+      }
+    ],
+    "include": []
+  },
+  "appid": "wx8fa3ed87c03d10a3",
+  "editorSetting": {},
+  "libVersion": "3.15.2"
 }

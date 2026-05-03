@@ -1,34 +1,76 @@
-﻿<view class="container">
-  <view class="hero-card">
-    <view class="eyebrow">{{dialectLabel}} · 薄弱项复练</view>
-    <view class="title">把最容易掉分的地方先练透。</view>
-    <view class="subtitle">这里会优先汇总最近没过线，或者分数偏低的音节、词和短句。</view>
+<view class="sanctuary-page with-tabbar page-weakness">
+  <view class="topbar">
+    <view class="avatar-shell">
+      <view class="avatar-shell__core">V</view>
+    </view>
+    <view class="topbar-spacer"></view>
+    <view class="topbar-action" bindtap="goDialect">⚙</view>
   </view>
 
-  <view class="panel" wx:if="{{!unlocked}}">
-    <view class="empty">完整版开通后，这里会汇总你的薄弱项并支持集中复练。</view>
-    <button class="btn-primary" bindtap="goTrial">先去体验</button>
-  </view>
+  <view class="container topbar-offset page-weakness__content">
+    <view class="weakness-hero">
+      <view class="hero-display">课程与<br />薄弱项</view>
+      <view class="body-copy">当前体系：{{dialectLabel}}。先看问题类型，再进入具体句子复练。</view>
+      <button class="btn-secondary weakness-levels" bindtap="goLevels">查看完整课程</button>
+    </view>
 
-  <view class="panel" wx:elif="{{items.length}}">
-    <block wx:for="{{items}}" wx:key="itemId" wx:for-item="weakItem">
-      <view class="item-card list-item" data-item-id="{{weakItem.itemId}}" bindtap="openItem">
-        <view class="row between">
-          <view>
-            <view class="section-title" style="font-size: 30rpx;">{{weakItem.text}}</view>
-            <view class="section-subtitle">{{weakItem.translation}}</view>
+    <view class="surface-card weakness-lock" wx:if="{{!unlocked}}">
+      <view class="weakness-lock__icon"></view>
+      <view class="section-title">先完成免费试练</view>
+      <view class="section-subtitle">完整课程开通后，这里会按声调、元音、尾音、方言差异和节奏整理您的高频问题。</view>
+      <button class="btn-primary mt-32" bindtap="goTrial">进入免费试练</button>
+    </view>
+
+    <view wx:elif="{{items.length || issueGroups.length}}">
+      <view class="section-head weakness-section-head" wx:if="{{issueGroups.length}}">
+        <view class="section-title">问题类型</view>
+        <view class="section-link">{{issueGroups.length}} 类</view>
+      </view>
+      <view class="weakness-group-list" wx:if="{{issueGroups.length}}">
+        <block wx:for="{{issueGroups}}" wx:key="key" wx:for-item="group">
+          <view class="surface-card weakness-group-card">
+            <view class="weakness-group-card__top">
+              <view>
+                <view class="weakness-group-card__label">{{group.label}}</view>
+                <view class="weakness-group-card__meta">{{group.count}} 次出现 · 平均 {{group.averageScore}} 分</view>
+              </view>
+              <view class="weakness-group-card__score">{{group.averageScore}}</view>
+            </view>
+            <block wx:for="{{group.items}}" wx:key="itemId" wx:for-item="groupItem">
+              <view class="weakness-group-card__item" data-item-id="{{groupItem.itemId}}" bindtap="openItem">
+                <view class="weakness-group-card__text">{{groupItem.text}}</view>
+                <view class="weakness-group-card__tip">{{groupItem.tip}}</view>
+              </view>
+            </block>
           </view>
-          <view class="badge-warn">{{weakItem.total}} 分</view>
-        </view>
-        <block wx:for="{{weakItem.issueTexts}}" wx:key="*this" wx:for-item="issueText">
-          <view class="note">- {{issueText}}</view>
         </block>
       </view>
-    </block>
-  </view>
 
-  <view class="panel" wx:else>
-    <view class="empty">你现在还没有明显薄弱项。先去练几条，系统才会开始汇总你的常见问题。</view>
+      <view class="section-head weakness-section-head">
+        <view class="section-title">待复练项目</view>
+        <view class="section-link">{{items.length}} 项</view>
+      </view>
+      <view class="weakness-list">
+        <block wx:for="{{items}}" wx:key="itemId" wx:for-item="weakItem">
+          <view class="surface-wrap weakness-item" data-item-id="{{weakItem.itemId}}" bindtap="openItem">
+            <view class="weakness-item__score">{{weakItem.total}}</view>
+            <view class="weakness-item__body">
+              <view class="weakness-item__title">{{weakItem.text}}</view>
+              <view class="weakness-item__sub">{{weakItem.translation}}</view>
+              <block wx:for="{{weakItem.issueTexts}}" wx:key="*this" wx:for-item="issueText">
+                <view class="weakness-item__tip">• {{issueText}}</view>
+              </block>
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <view class="surface-wrap weakness-empty" wx:else>
+      <view class="weakness-empty__mark"></view>
+      <view class="section-title">暂时没有明显薄弱项</view>
+      <view class="section-subtitle">先去练几条，系统会根据评分结果自动汇总高频问题。</view>
+      <button class="btn-secondary mt-32" bindtap="goTrial">继续练习</button>
+    </view>
   </view>
-  <view class="footer-space"></view>
 </view>

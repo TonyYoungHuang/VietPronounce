@@ -1,8 +1,22 @@
-﻿<view class="container">
-  <view class="hero-card">
-    <view class="eyebrow">账号登录</view>
-    <view class="title">登录后才能保存进度、兑换码开通。</view>
-    <view class="subtitle">免费试练可以先不登录，但正式学习和完整版开通需要完成账号绑定。</view>
-    <button class="btn-primary mt-32" bindtap="handleLogin">微信一键登录（模拟）</button>
+<view class="sanctuary-page auth-page">
+  <view class="topbar">
+    <view class="avatar-shell"><view class="avatar-shell__core">V</view></view>
+    <view class="topbar-spacer"></view>
+    <view class="topbar-action" bindtap="skipBind">×</view>
+  </view>
+
+  <view class="container topbar-offset auth-page__content">
+    <view class="auth-hero">
+      <view class="hero-display">登录后<br />保存学习进度</view>
+      <view class="body-copy">用于同步课程记录、兑换课程权益，并在更换设备后继续练习。</view>
+    </view>
+
+    <view class="surface-card auth-card">
+      <view class="auth-card__icon"></view>
+      <view class="section-title">微信授权登录</view>
+      <view class="section-subtitle">完成授权后，可继续绑定手机号并开通完整课程。</view>
+      <button class="btn-primary mt-32" loading="{{loading}}" bindtap="handleLogin">继续登录</button>
+      <button class="btn-ghost mt-16" bindtap="skipBind">暂不登录，先回首页</button>
+    </view>
   </view>
 </view>

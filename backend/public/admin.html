@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>越南语纠音后台</title>
+    <title>东南亚发音后台</title>
     <link rel="stylesheet" href="/admin/admin.css" />
   </head>
   <body>
@@ -25,8 +25,8 @@
       <header class="hero">
         <div>
           <p class="eyebrow">Admin Console</p>
-          <h1>越南语纠音训练后台</h1>
-          <p class="subtitle">今晚先把内容编辑、兑换码管理、用户查看和本地备份流程跑稳。</p>
+          <h1>东南亚发音训练后台</h1>
+          <p class="subtitle">管理课程内容、试听内容、兑换码和用户状态。</p>
         </div>
         <div class="hero-actions">
           <button id="reload-all" class="btn btn-primary">刷新全部</button>
@@ -39,17 +39,31 @@
           <div class="panel-head">
             <div>
               <h2>兑换码</h2>
-              <p>创建新兑换码并查看使用状态。</p>
+              <p>创建单个或批量兑换码，并查看使用状态。</p>
             </div>
-            <div class="inline-form">
-              <input id="redeem-code-input" type="text" placeholder="例如：VIET-2026-BATCH-01" />
-              <button id="create-redeem-code" class="btn">新增兑换码</button>
+            <div class="redeem-generator">
+              <input id="redeem-code-input" type="text" placeholder="指定单码，可留空自动生成" />
+              <input id="redeem-prefix-input" type="text" value="VER" placeholder="前缀" />
+              <input id="redeem-count-input" type="number" value="1" min="1" max="200" placeholder="数量" />
+              <select id="redeem-dialect-input">
+                <option value="all">全部语种</option>
+                <option value="north">北越</option>
+                <option value="south">南越</option>
+                <option value="thai">泰语</option>
+                <option value="malay">马来语</option>
+                <option value="indo">印尼语</option>
+                <option value="tagalog">菲律宾语</option>
+                <option value="hindi">印地语</option>
+                <option value="tamil">泰米尔语</option>
+              </select>
+              <input id="redeem-note-input" type="text" placeholder="备注：渠道 / 客户 / 批次" />
+              <button id="create-redeem-code" class="btn">生成激活码</button>
             </div>
           </div>
           <div class="table-wrap">
             <table>
               <thead>
-                <tr><th>兑换码</th><th>状态</th><th>使用者</th><th>时间</th></tr>
+                <tr><th>兑换码</th><th>语种</th><th>批次</th><th>备注</th><th>状态</th><th>使用者</th><th>时间</th></tr>
               </thead>
               <tbody id="redeem-code-body"></tbody>
             </table>
@@ -80,11 +94,17 @@
           <div class="panel-head">
             <div>
               <h2>试听内容</h2>
-              <p>支持北越 / 南越切换。保存前会先校验字段并自动备份。</p>
+              <p>支持多语言试听内容切换。保存前会先校验字段并自动备份。</p>
             </div>
             <div class="button-row">
               <button class="btn tab active" data-trial-dialect="north">北越</button>
               <button class="btn tab" data-trial-dialect="south">南越</button>
+              <button class="btn tab" data-trial-dialect="thai">泰语</button>
+              <button class="btn tab" data-trial-dialect="malay">马来语</button>
+              <button class="btn tab" data-trial-dialect="indo">印尼语</button>
+              <button class="btn tab" data-trial-dialect="tagalog">菲律宾语</button>
+              <button class="btn tab" data-trial-dialect="hindi">印地语</button>
+              <button class="btn tab" data-trial-dialect="tamil">泰米尔语</button>
               <button id="format-trial" class="btn">格式化</button>
               <button id="save-trial" class="btn btn-primary">保存试听</button>
             </div>
@@ -96,7 +116,7 @@
           <div class="panel-head">
             <div>
               <h2>课程目录</h2>
-              <p>保存时自动做结构校验，并写入备份到 <code>storage/backups</code>。</p>
+              <p>保存时自动做结构校验，并写入备份到 <code>storage/backups</code>。type 仅支持 syllable / word / sentence，南北越 lesson 与 item 结构需镜像。</p>
             </div>
             <div class="button-row">
               <button id="format-catalog" class="btn">格式化</button>

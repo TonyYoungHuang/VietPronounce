@@ -1,43 +1,98 @@
-﻿<view class="container" wx:if="{{trial}}">
-  <view class="hero-card">
-    <view class="eyebrow">{{dialectLabel}} · 完整试练结果</view>
-    <view class="title">{{trial.total}} 分</view>
-    <view class="subtitle">{{trial.passed ? '这条已经接近达标，但还能继续磨准确度。' : '这条还没达标，说明机器已经找到你最需要纠正的地方。'}}</view>
+<view class="sanctuary-page result-page" wx:if="{{trial}}">
+  <view class="topbar">
+    <view class="avatar-shell"><view class="avatar-shell__core">V</view></view>
+    <view class="topbar-spacer"></view>
+    <view class="topbar-action" bindtap="playDemo">▶</view>
   </view>
 
-  <view class="metric-grid">
-    <view class="metric-card"><view class="metric-number">{{trial.completeness}}</view><view class="metric-label">完整度</view></view>
-    <view class="metric-card"><view class="metric-number">{{trial.accuracy}}</view><view class="metric-label">准确度</view></view>
-    <view class="metric-card"><view class="metric-number">{{trial.fluency}}</view><view class="metric-label">流利度</view></view>
-    <view class="metric-card"><view class="metric-number">{{trial.passed ? '通过' : '重练'}}</view><view class="metric-label">本次状态</view></view>
-  </view>
+  <view class="container topbar-offset result-page__content">
+    <view class="result-hero">
+      <view class="result-hero__halo"></view>
+      <view class="result-hero__score-card">
+        <view class="result-hero__score">{{trial.total}}</view>
+        <view class="result-hero__label">TOTAL SCORE</view>
+      </view>
+      <view class="result-hero__leaf result-hero__leaf--top"></view>
+      <view class="result-hero__leaf result-hero__leaf--bottom"></view>
+    </view>
 
-  <view class="issue-card">
-    <view class="section-title">错误定位</view>
-    <view class="segment-line">
-      <block wx:for="{{trial.segments}}" wx:key="text">
-        <view class="{{item.active ? 'segment-chip-error' : 'segment-chip'}}">{{item.text}}</view>
+    <view class="result-headline">{{moodTitle}}</view>
+    <view class="result-subline">{{moodSub}}</view>
+
+    <view class="surface-card result-segment-card">
+      <view class="result-segment-card__title">分段纠音</view>
+      <view class="result-segment-row">
+        <block wx:for="{{trial.segments}}" wx:key="text">
+          <view
+            class="result-segment {{item.active ? 'result-segment--active' : ''}}"
+            data-tip="{{item.tip}}"
+            data-text="{{item.text}}"
+            bindtap="selectSegment"
+          >{{item.text}}</view>
+        </block>
+      </view>
+      <view class="result-segment-tip">
+        <view class="result-segment-tip__label">{{selectedSegmentText ? selectedSegmentText : '提示'}}</view>
+        <view class="result-segment-tip__copy">{{selectedSegmentTip}}</view>
+      </view>
+    </view>
+
+    <view class="result-metrics">
+      <view class="surface-wrap result-metric-card">
+        <view class="result-metric-card__top"><view class="result-metric-card__title">准确度</view><view class="result-metric-card__icon">✓</view></view>
+        <view class="result-metric-card__value">{{trial.accuracy}}<text>%</text></view>
+        <view class="result-metric-card__bar"><view class="result-metric-card__fill" style="width: {{trial.accuracy}}%;"></view></view>
+      </view>
+      <view class="surface-wrap result-metric-card result-metric-card--warm">
+        <view class="result-metric-card__top"><view class="result-metric-card__title">流利度</view><view class="result-metric-card__icon">≈</view></view>
+        <view class="result-metric-card__value">{{trial.fluency}}<text>%</text></view>
+        <view class="result-metric-card__bar"><view class="result-metric-card__fill" style="width: {{trial.fluency}}%;"></view></view>
+      </view>
+      <view class="surface-wrap result-metric-card">
+        <view class="result-metric-card__top"><view class="result-metric-card__title">完整度</view><view class="result-metric-card__icon">◎</view></view>
+        <view class="result-metric-card__value">{{trial.completeness}}<text>%</text></view>
+        <view class="result-metric-card__bar"><view class="result-metric-card__fill" style="width: {{trial.completeness}}%;"></view></view>
+      </view>
+    </view>
+
+    <view class="result-dimensions" wx:if="{{pronunciationDimensions.length}}">
+      <view class="section-head result-dimensions__head">
+        <view class="section-title">越南语专项纠音</view>
+        <view class="section-link">{{dialectLabel}}</view>
+      </view>
+      <block wx:for="{{pronunciationDimensions}}" wx:key="key">
+        <view class="surface-wrap result-dimension-card result-dimension-card--{{item.key}}">
+          <view class="result-dimension-card__top">
+            <view>
+              <view class="result-dimension-card__label">{{item.label}}</view>
+              <view class="result-dimension-card__focus">{{item.focus}}</view>
+            </view>
+            <view class="result-dimension-card__score">{{item.score}}</view>
+          </view>
+          <view class="result-dimension-card__bar"><view class="result-dimension-card__fill" style="width: {{item.score}}%;"></view></view>
+          <view class="result-dimension-card__tip">{{item.tip}}</view>
+        </view>
       </block>
     </view>
-    <block wx:for="{{trial.segments}}" wx:key="text">
-      <view class="list-item mt-24" wx:if="{{item.active}}">
-        <view class="badge-warn">重点纠正</view>
-        <view class="section-subtitle">{{item.tip}}</view>
-      </view>
-    </block>
-  </view>
 
-  <view class="panel">
-    <view class="section-title">对比重听</view>
-    <view class="row gap-16 mt-24">
-      <view class="btn-inline" bindtap="playDemo">听标准音</view>
-      <view class="btn-inline" bindtap="playRecord">听我的录音</view>
+    <view class="result-tip-card">
+      <view class="result-tip-card__title">试练反馈</view>
+      <block wx:if="{{issueTips.length}}">
+        <block wx:for="{{issueTips}}" wx:key="*this"><view class="result-tip-card__item">{{index + 1}}. {{item}}</view></block>
+      </block>
+      <view class="result-tip-card__item" wx:else>这一条已经有不错的自然度，完整课程会继续围绕准确度给你更细的训练。</view>
+      <view class="result-tip-card__stamp"></view>
+    </view>
+
+    <view class="result-audio-row">
+      <button class="btn-secondary" bindtap="playDemo"><view class="btn-glyph btn-glyph--play"></view><text>听标准音</text></button>
+      <button class="btn-ghost" bindtap="playRecord"><view class="btn-glyph btn-glyph--record"></view><text>听我的录音</text></button>
     </view>
   </view>
 
-  <view class="cta-card">
-    <button class="btn-primary" bindtap="goContact">联系客服了解完整版</button>
-    <button class="btn-ghost mt-16" bindtap="goLogin">登录并准备开通</button>
+  <view class="floating-action-bar">
+    <button class="btn-ghost" bindtap="retryTrial">再试一次</button>
+    <button class="btn-primary mt-16" bindtap="goContact">了解完整课程</button>
+    <button class="btn-secondary mt-16" bindtap="goLogin">登录并准备开通</button>
   </view>
-  <view class="footer-space"></view>
 </view>

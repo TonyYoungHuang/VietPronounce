@@ -1,8 +1,22 @@
-﻿<view class="container">
-  <view class="panel">
-    <view class="section-title">绑定手机号</view>
-    <view class="section-subtitle">用于开通完整版、识别账号和保存学习记录。</view>
-    <input class="input mt-24" type="number" maxlength="11" placeholder="请输入手机号" bindinput="handleInput" value="{{phone}}" />
-    <button class="btn-primary mt-24" bindtap="submit">确认绑定</button>
+<view class="sanctuary-page auth-page">
+  <view class="topbar">
+    <view class="topbar-action" bindtap="skip">‹</view>
+    <view class="topbar-spacer"></view>
+    <view class="topbar-action" bindtap="skip">×</view>
+  </view>
+
+  <view class="container topbar-offset auth-page__content">
+    <view class="auth-hero">
+      <view class="hero-display">绑定手机号</view>
+      <view class="body-copy">用于识别课程权益、找回学习记录，并保障兑换码开通流程顺利完成。</view>
+    </view>
+
+    <view class="surface-card phone-card">
+      <view class="phone-card__badge">ACCOUNT</view>
+      <view class="section-title">请输入常用手机号</view>
+      <input class="input phone-input" type="number" maxlength="11" placeholder="11 位手机号" bindinput="handleInput" value="{{phone}}" />
+      <button class="btn-primary mt-32" loading="{{loading}}" bindtap="submit">确认绑定</button>
+      <button class="btn-ghost mt-16" bindtap="skip">稍后再说</button>
+    </view>
   </view>
 </view>

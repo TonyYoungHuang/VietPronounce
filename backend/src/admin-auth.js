@@ -2,7 +2,7 @@ const crypto = require('crypto');
 
 const SESSION_COOKIE = 'vi_admin_session';
 const SESSION_TTL_SECONDS = 60 * 60 * 12;
-const DEFAULT_ADMIN_PASSWORD = 'admin123456';
+const DEFAULT_ADMIN_PASSWORD = 'admin123';
 const sessions = new Map();
 
 function getAdminPassword() {
