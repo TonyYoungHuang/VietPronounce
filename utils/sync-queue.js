@@ -42,14 +42,6 @@ async function runTask(task) {
     return true;
   }
 
-  if (task.type === 'bindPhone') {
-    const { userId, phone } = task.payload || {};
-    if (!userId || !phone) return true;
-    const remoteUser = await appApi.bindPhone(userId, phone);
-    store.hydrateFromRemoteUser(remoteUser);
-    return true;
-  }
-
   return true;
 }
 

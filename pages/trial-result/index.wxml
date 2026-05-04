@@ -93,6 +93,6 @@
   <view class="floating-action-bar">
     <button class="btn-ghost" bindtap="retryTrial">再试一次</button>
     <button class="btn-primary mt-16" bindtap="goContact">了解完整课程</button>
-    <button class="btn-secondary mt-16" bindtap="goLogin">登录并准备开通</button>
+    <button class="btn-secondary mt-16" bindtap="goRedeem">输入激活码</button>
   </view>
 </view>

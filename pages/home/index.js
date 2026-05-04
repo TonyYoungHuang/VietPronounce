@@ -33,7 +33,7 @@ function buildTiles(options) {
         action: 'profile',
         tone: 'forest',
         title: '文化浸润',
-        subtitle: '先登录与绑定手机，为后续开通做好准备',
+        subtitle: '输入激活码即可开通完整课程，继续保存练习进度',
         icon: 'temple'
       }
     ];
@@ -73,7 +73,6 @@ Page(attachShare({
     dialectLabel: '北越',
     unlocked: false,
     loggedIn: false,
-    hasPhone: false,
     continueTarget: null,
     levels: [],
     heroName: '林先生',
@@ -147,7 +146,6 @@ Page(attachShare({
       dialectLabel,
       unlocked,
       loggedIn: !!state.auth.loggedIn,
-      hasPhone: !!state.auth.phone,
       continueTarget,
       levels,
       heroName,

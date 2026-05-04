@@ -12,30 +12,23 @@
 
   <view class="container topbar-offset page-redeem__content">
     <view class="redeem-hero">
-      <view class="redeem-title">激活高级课程</view>
-      <view class="redeem-subtitle">开通后即可进入完整的北越与南越训练路径。</view>
+      <view class="redeem-title">激活课程</view>
+      <view class="redeem-subtitle">输入激活码即可开通对应语种的完整训练路径。</view>
     </view>
 
     <view class="surface-card redeem-card">
       <view class="redeem-card__line"></view>
-      <view class="redeem-label">请输入兑换码</view>
+      <view class="redeem-label">请输入激活码</view>
       <input
         class="input redeem-input"
-        placeholder="EX: VER-GOLD-2024"
+        placeholder="EX: ASIA-2026-OPEN"
         placeholder-class="redeem-input__placeholder"
         value="{{code}}"
         bindinput="handleInput"
       />
 
-      <view class="redeem-gate" wx:if="{{needLogin || needPhone}}">
-        <view class="redeem-gate__title">{{needLogin ? '请先登录账号' : '请先绑定手机号'}}</view>
-        <view class="redeem-gate__copy">{{needLogin ? '登录后才能识别课程权益并保存开通记录。' : '绑定手机号后，兑换码权益会更稳定地关联到当前账号。'}}</view>
-        <button class="btn-secondary mt-24" wx:if="{{needLogin}}" bindtap="goLogin">去登录</button>
-        <button class="btn-secondary mt-24" wx:if="{{needPhone}}" bindtap="goBindPhone">去绑定手机号</button>
-      </view>
-
-      <button class="btn-primary redeem-submit" loading="{{loading}}" disabled="{{loading || needLogin || needPhone}}" bindtap="submit">立即激活</button>
-      <view class="redeem-terms">激活后，课程权益会记录到当前账号。</view>
+      <button class="btn-primary redeem-submit" loading="{{loading}}" disabled="{{loading}}" bindtap="submit">立即激活</button>
+      <view class="redeem-terms">激活后，课程权益会记录到当前设备的匿名学习档案。</view>
       <view class="redeem-message {{redeemed ? 'redeem-message--success' : ''}}" wx:if="{{message}}">{{message}}</view>
 
       <view class="redeem-success-actions" wx:if="{{redeemed}}">

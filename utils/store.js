@@ -32,7 +32,7 @@ function defaultDialectProgress(dialect) {
 function createDefaultState() {
   return {
     selectedDialect: 'north',
-    auth: { loggedIn: false, userId: '', nickName: '', phone: '' },
+    auth: { loggedIn: false, userId: '', nickName: '' },
     product: { unlocked: false, unlockedDialects: [], redeemedCode: '', redeemedAt: '' },
     trial: { dialect: 'north', completed: false, result: null },
     latestPracticeResult: null,
@@ -295,13 +295,6 @@ function createLocalSession() {
   });
 }
 
-function bindPhone(phone) {
-  return updateState((state) => {
-    state.auth.phone = phone;
-    return state;
-  });
-}
-
 function redeem(code) {
   const normalized = String(code || '').trim().toUpperCase();
   const state = getState();
@@ -324,10 +317,6 @@ function isLoggedIn() {
 function getUserId() {
   const state = getState();
   return state.auth.userId || state.userId || '';
-}
-
-function hasBoundPhone() {
-  return !!getState().auth.phone;
 }
 
 function isUnlocked() {
@@ -573,11 +562,9 @@ module.exports = {
   saveTrialResult,
   getTrialResult,
   createLocalSession,
-  bindPhone,
   redeem,
   isLoggedIn,
   getUserId,
-  hasBoundPhone,
   isUnlocked,
   isDialectUnlocked,
   createTrialAttempt,

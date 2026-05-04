@@ -102,8 +102,7 @@ function renderRedeemCodes(items) {
 function renderUsers(users) {
   elements.userBody.innerHTML = users.map((user) => `
     <tr>
-      <td>${escapeHtml(user.auth && user.auth.nickName || '-')}</td>
-      <td>${escapeHtml(user.auth && user.auth.phone || '-')}</td>
+      <td>${escapeHtml(user.auth && user.auth.nickName || '匿名学习档案')}</td>
       <td>${escapeHtml(labelDialect(user.selectedDialect))}</td>
       <td><span class="badge ${user.product && user.product.unlocked ? 'success' : ''}">${user.product && user.product.unlocked ? '已开通' : '未开通'}</span></td>
       <td>${formatTime(user.updatedAt)}</td>

@@ -87,7 +87,7 @@ Page(attachShare({
   async ensureRemoteUser() {
     const currentUserId = store.getUserId();
     if (currentUserId) return currentUserId;
-    const remoteUser = await appApi.loginWithWechat('发音练习学员');
+    const remoteUser = await appApi.createAnonymousUser();
     store.hydrateFromRemoteUser(remoteUser);
     return store.getUserId();
   },

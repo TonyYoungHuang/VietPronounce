@@ -4,8 +4,6 @@
     "pages/dialect/index",
     "pages/trial/index",
     "pages/trial-result/index",
-    "pages/login/index",
-    "pages/bind-phone/index",
     "pages/home/index",
     "pages/levels/index",
     "pages/lesson/index",

@@ -85,8 +85,7 @@ function createDefaultUser(userId, nickName) {
     auth: {
       loggedIn: true,
       userId,
-      nickName: sanitizeNickName(nickName),
-      phone: ''
+      nickName: sanitizeNickName(nickName)
     },
     product: {
       unlocked: false,
@@ -216,21 +215,8 @@ function createUser(nickName) {
   return saveUser(user);
 }
 
-function loginWithWechat(nickName) {
-  return createUser(nickName || '发音练习学员');
-}
-
-function bindPhone(userId, phone) {
-  assertNonEmptyString(userId, '缺少用户 ID');
-  assertNonEmptyString(phone, '请输入手机号');
-  if (!/^1\d{10}$/.test(String(phone))) {
-    const error = new Error('手机号格式不正确');
-    error.statusCode = 400;
-    throw error;
-  }
-  const user = requireUser(userId);
-  user.auth.phone = phone;
-  return saveUser(user);
+function createAnonymousUser() {
+  return createUser('学习档案');
 }
 
 function updateDialect(userId, dialect) {
@@ -575,11 +561,10 @@ module.exports = {
   getCatalog,
   getPublicCatalog,
   getTrial,
-  loginWithWechat,
+  createAnonymousUser,
   getUser,
   requireUser,
   saveUser,
-  bindPhone,
   updateDialect,
   redeemProduct,
   getLevels,

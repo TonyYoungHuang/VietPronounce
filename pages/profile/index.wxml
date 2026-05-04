@@ -13,21 +13,20 @@
         <view class="profile-avatar__core"></view>
       </view>
       <view class="profile-title">你好，{{nickName}}</view>
-      <view class="profile-subtitle">{{auth.loggedIn ? '学习进度会持续为您保存。' : '登录后可保存进度并激活完整课程。'}}</view>
-      <button class="btn-primary profile-cta" wx:if="{{!auth.loggedIn}}" bindtap="goLogin">立即登录</button>
-      <button class="btn-secondary profile-cta" wx:else bindtap="goLevels">继续课程</button>
+      <view class="profile-subtitle">使用激活码开通课程后，练习进度会保存到当前学习档案。</view>
+      <button class="btn-secondary profile-cta" bindtap="goLevels">继续课程</button>
     </view>
 
     <view class="surface-card profile-card">
       <view class="profile-card__head">
         <view>
-          <view class="section-title">高级课程</view>
-          <view class="section-subtitle">{{product.unlocked ? '北越与南越完整体系已解锁。' : '激活后解锁完整课程与复练路径。'}}</view>
+          <view class="section-title">课程权益</view>
+          <view class="section-subtitle">{{product.unlocked ? '完整训练路径已解锁。' : '输入激活码后解锁完整课程与复练路径。'}}</view>
         </view>
         <view class="{{product.unlocked ? 'badge-success' : 'badge-warn'}}">{{product.unlocked ? '已激活' : '待激活'}}</view>
       </view>
-      <button class="btn-primary mt-32" wx:if="{{!product.unlocked}}" bindtap="goRedeem">激活高级课程</button>
-      <button class="btn-secondary mt-24" bindtap="goContact">联系顾问</button>
+      <button class="btn-primary mt-32" wx:if="{{!product.unlocked}}" bindtap="goRedeem">输入激活码</button>
+      <button class="btn-secondary mt-24" bindtap="goContact">课程顾问</button>
     </view>
 
     <view class="section-head profile-section-head">
@@ -43,16 +42,6 @@
           <view class="profile-dialect-card__copy">{{item.description}}</view>
         </view>
       </block>
-      <view wx:if="{{false}}" class="surface-wrap profile-dialect-card {{selectedDialect === 'north' ? 'profile-dialect-card--active' : ''}}" data-dialect="north" bindtap="switchDialect">
-        <view class="profile-dialect-card__name">北越</view>
-        <view class="profile-dialect-card__meta">NORTHERN</view>
-        <view class="profile-dialect-card__copy">标准感更强，声调边界清晰。</view>
-      </view>
-      <view wx:if="{{false}}" class="surface-wrap profile-dialect-card {{selectedDialect === 'south' ? 'profile-dialect-card--active' : ''}}" data-dialect="south" bindtap="switchDialect">
-        <view class="profile-dialect-card__name">南越</view>
-        <view class="profile-dialect-card__meta">SOUTHERN</view>
-        <view class="profile-dialect-card__copy">语流更顺，口感更自然。</view>
-      </view>
     </view>
   </view>
 </view>

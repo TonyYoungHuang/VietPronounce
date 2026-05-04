@@ -37,8 +37,7 @@ Runtime override for emergency testing is still available through the `vi_coach_
 - `GET /api/config/public`
 - `GET /api/catalog`
 - `GET /api/trial?dialect=north`
-- `POST /api/auth/wechat-login`
-- `POST /api/auth/bind-phone`
+- `POST /api/auth/anonymous`
 - `POST /api/redeem`
 - `GET /api/user/state?userId=...`
 - `POST /api/user/dialect`

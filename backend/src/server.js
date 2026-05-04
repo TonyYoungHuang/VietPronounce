@@ -153,14 +153,9 @@ async function handleApi(req, res, url) {
     sendAudio(res, audio);
     return;
   }
-  if (method === 'POST' && pathname === '/api/auth/wechat-login') {
-    const body = await parseBody(req);
-    sendOk(res, domain.loginWithWechat(body.nickName), 201);
-    return;
-  }
-  if (method === 'POST' && pathname === '/api/auth/bind-phone') {
-    const body = await parseBody(req);
-    sendOk(res, domain.bindPhone(body.userId, body.phone));
+  if (method === 'POST' && pathname === '/api/auth/anonymous') {
+    await parseBody(req);
+    sendOk(res, domain.createAnonymousUser(), 201);
     return;
   }
   if (method === 'GET' && pathname === '/api/user/state') {

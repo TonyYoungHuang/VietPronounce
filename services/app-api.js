@@ -55,17 +55,10 @@ function fetchTrial(dialect) {
   return call('/api/trial', { data: { dialect } });
 }
 
-function loginWithWechat(nickName) {
-  return call('/api/auth/wechat-login', {
+function createAnonymousUser() {
+  return call('/api/auth/anonymous', {
     method: 'POST',
-    data: { nickName }
-  });
-}
-
-function bindPhone(userId, phone) {
-  return call('/api/auth/bind-phone', {
-    method: 'POST',
-    data: { userId, phone }
+    data: {}
   });
 }
 
@@ -111,8 +104,7 @@ module.exports = {
   fetchPublicConfig,
   fetchCatalog,
   fetchTrial,
-  loginWithWechat,
-  bindPhone,
+  createAnonymousUser,
   fetchUserState,
   updateDialect,
   redeem,

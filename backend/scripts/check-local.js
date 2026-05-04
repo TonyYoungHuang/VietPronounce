@@ -101,18 +101,13 @@ async function stopServer(child) {
     assert.ok(scorePayload.data.score.total >= 0, 'score endpoint should return total score');
     assert.equal(scorePayload.data.score.scoreSource, 'backend-baseline');
 
-    const user = await requestJson('/api/auth/wechat-login', {
+    const user = await requestJson('/api/auth/anonymous', {
       method: 'POST',
-      body: { nickName: 'backend-check' }
+      body: {}
     });
-    assert.ok(user.userId, 'login should return userId');
+    assert.ok(user.userId, 'anonymous auth should return userId');
 
     const userId = user.userId;
-    await requestJson('/api/auth/bind-phone', {
-      method: 'POST',
-      body: { userId, phone: '13800138000' }
-    });
-
     const session = await requestJson('/api/admin/session');
     assert.equal(session.authenticated, false, '初始不应登录后台');
 

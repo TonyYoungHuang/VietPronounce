@@ -10,7 +10,7 @@ Page(attachShare({
     selectedDialect: 'north',
     dialects: [],
     avatarText: 'V',
-    nickName: '学习者'
+    nickName: '学习档案'
   },
 
   async onShow() {
@@ -21,11 +21,11 @@ Page(attachShare({
         const remoteUser = await appApi.fetchUserState(userId);
         store.hydrateFromRemoteUser(remoteUser);
       } catch (error) {
-        // keep local state
+        // Keep local state when the network is temporarily unavailable.
       }
     }
     const state = store.getState();
-    const nickName = state.auth.nickName || '学习者';
+    const nickName = state.auth.nickName || '学习档案';
     this.setData({
       auth: state.auth,
       product: state.product,
@@ -60,10 +60,6 @@ Page(attachShare({
 
     this.setData({ selectedDialect: dialect });
     wx.showToast({ title: `已切到${store.getDialectLabel(dialect)}`, icon: 'none' });
-  },
-
-  goLogin() {
-    wx.navigateTo({ url: '/pages/login/index?next=/pages/profile/index' });
   },
 
   goRedeem() {

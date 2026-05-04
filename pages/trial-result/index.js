@@ -63,8 +63,8 @@ Page(attachShare({
     wx.navigateTo({ url: '/pages/contact/index?from=trial-result' });
   },
 
-  goLogin() {
-    wx.navigateTo({ url: '/pages/login/index?next=/pages/home/index' });
+  goRedeem() {
+    wx.navigateTo({ url: '/pages/redeem/index' });
   },
 
   retryTrial() {
