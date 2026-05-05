@@ -13,7 +13,7 @@ const TYPE_LABELS = {
 Page(attachShare({
   data: {
     dialect: 'north',
-    dialectLabel: '北越',
+    dialectLabel: '亚洲语种',
     levelId: 'beginner',
     levelName: '零基础',
     lessons: [],
@@ -74,7 +74,7 @@ Page(attachShare({
 
     this.setData({
       dialect,
-      dialectLabel: dialect === 'south' ? '南越' : '北越',
+      dialectLabel: store.getDialectLabel(dialect),
       levelName: currentLevel.name,
       lessons,
       offlineNotice: getOfflineNotice()

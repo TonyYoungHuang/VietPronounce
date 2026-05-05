@@ -4,7 +4,6 @@
       <view class="avatar-shell__core">V</view>
     </view>
     <view class="landing-topbar-title">每天练一点，发音准一点</view>
-    <view class="topbar-action topbar-gear" bindtap="goContact"></view>
   </view>
 
   <view class="container topbar-offset landing-content">
@@ -21,10 +20,6 @@
         <view class="sanctuary-cta sanctuary-cta--primary" bindtap="startSelected">
           <text>开始当前语种</text>
           <view class="cta-arrow"></view>
-        </view>
-        <view class="sanctuary-cta sanctuary-cta--secondary" bindtap="goContact">
-          <text>了解完整课程</text>
-          <view class="cta-book"></view>
         </view>
       </view>
     </view>
@@ -97,8 +92,8 @@
     </view>
 
     <view class="section-head landing-section-head">
-      <view class="section-title">主链路</view>
-      <view class="section-link" bindtap="goStart">开始</view>
+      <view class="section-title">怎么开始练</view>
+      <view class="section-link" bindtap="startSelected">去试练</view>
     </view>
 
     <view class="landing-flow">
@@ -113,8 +108,8 @@
           <view class="flow-watermark__leaf"></view>
         </view>
         <view class="landing-flow__num">01</view>
-        <view class="landing-flow__title">选择体系</view>
-        <view class="landing-flow__copy">先选择越南语、泰语、马来语或菲律宾语，再进入免费试练。</view>
+        <view class="landing-flow__title">先选一个语种</view>
+        <view class="landing-flow__copy">想练哪个，就先点哪个。每个语种都可以先试一条。</view>
       </view>
       <view class="surface-wrap landing-flow__item landing-flow__item--two">
         <view class="landing-flow__icon flow-icon flow-icon--record">
@@ -128,8 +123,8 @@
           <view class="flow-watermark__sound flow-watermark__sound--two"></view>
         </view>
         <view class="landing-flow__num">02</view>
-        <view class="landing-flow__title">录音评分</view>
-        <view class="landing-flow__copy">听标准音、跟读录音，并获得分项反馈。</view>
+        <view class="landing-flow__title">听一遍，再录一条</view>
+        <view class="landing-flow__copy">先听范读，再按住录音，看看自己的发音反馈。</view>
       </view>
       <view class="surface-wrap landing-flow__item landing-flow__item--three">
         <view class="landing-flow__icon flow-icon flow-icon--unlock">
@@ -143,8 +138,8 @@
           <view class="flow-watermark__spark flow-watermark__spark--two"></view>
         </view>
         <view class="landing-flow__num">03</view>
-        <view class="landing-flow__title">激活课程</view>
-        <view class="landing-flow__copy">输入对应语种激活码，解锁该语种完整学习路径。</view>
+        <view class="landing-flow__title">有激活码就开通</view>
+        <view class="landing-flow__copy">购买后把激活码填进来，就能进入对应语种课程。</view>
       </view>
     </view>
   </view>

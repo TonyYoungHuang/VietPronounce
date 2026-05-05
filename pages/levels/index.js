@@ -6,7 +6,7 @@ const { attachShare } = require('../../utils/share');
 
 Page(attachShare({
   data: {
-    dialectLabel: '北越',
+    dialectLabel: '亚洲语种',
     levels: [],
     offlineNotice: ''
   },
@@ -35,7 +35,7 @@ Page(attachShare({
     }
 
     this.setData({
-      dialectLabel: dialect === 'south' ? '南越' : '北越',
+      dialectLabel: store.getDialectLabel(dialect),
       levels,
       offlineNotice: getOfflineNotice()
     });

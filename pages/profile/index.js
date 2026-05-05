@@ -66,15 +66,11 @@ Page(attachShare({
     wx.navigateTo({ url: '/pages/redeem/index' });
   },
 
-  goContact() {
-    wx.navigateTo({ url: '/pages/contact/index?from=profile' });
-  },
-
   goLevels() {
     wx.navigateTo({ url: '/pages/levels/index' });
   },
 
   goDialect() {
-    wx.navigateTo({ url: '/pages/dialect/index' });
+    wx.navigateTo({ url: '/pages/landing/index' });
   }
 }, { path: '/pages/landing/index?from=share' }));

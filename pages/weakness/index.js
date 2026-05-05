@@ -49,21 +49,26 @@ Page(attachShare({
   openItem(event) {
     const itemId = event.currentTarget.dataset.itemId;
     if (!this.data.unlocked) {
-      wx.navigateTo({ url: '/pages/contact/index?from=weakness' });
+      wx.navigateTo({ url: '/pages/landing/index' });
       return;
     }
     wx.navigateTo({ url: `/pages/practice/index?itemId=${itemId}` });
   },
 
   goTrial() {
-    wx.navigateTo({ url: '/pages/dialect/index?entry=weakness' });
+    const dialect = store.getState().selectedDialect || 'north';
+    wx.navigateTo({ url: `/pages/trial/index?dialect=${dialect}&mode=trial` });
   },
 
   goDialect() {
-    wx.navigateTo({ url: '/pages/dialect/index' });
+    wx.navigateTo({ url: '/pages/landing/index' });
   },
 
   goLevels() {
+    if (!this.data.unlocked) {
+      wx.navigateTo({ url: '/pages/landing/index' });
+      return;
+    }
     wx.navigateTo({ url: '/pages/levels/index' });
   }
 }, { path: '/pages/landing/index?from=share' }));

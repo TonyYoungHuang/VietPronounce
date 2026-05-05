@@ -8,6 +8,12 @@ const { prepareGuidedSegments } = require('../../utils/content-audio');
 const { ensureServiceReadyForScoring } = require('../../utils/startup-check');
 const { getOfflineNotice, markUsingCache } = require('../../utils/network-status');
 const { enqueueSyncTask } = require('../../utils/sync-queue');
+const {
+  agreePrivacyAuthorization,
+  openPrivacyContract,
+  rejectPrivacyAuthorization,
+  requestRecordPermission
+} = require('../../utils/record-permission');
 const { attachShare } = require('../../utils/share');
 
 function findPracticeFrame(dialect, item) {
@@ -32,7 +38,7 @@ function findPracticeFrame(dialect, item) {
 Page(attachShare({
   data: {
     dialect: 'north',
-    dialectLabel: '北越',
+    dialectLabel: '亚洲语种',
     item: null,
     hasRecording: false,
     recording: false,
@@ -51,14 +57,16 @@ Page(attachShare({
     preflightText: '找一个安静环境，手机距离嘴部约 15-20 厘米。',
     countdown: 0,
     volumeBars: [18, 30, 22, 36, 24],
-    recordingHint: '按住录音，松开结束'
+    recordingHint: '按住录音，松开结束',
+    privacyVisible: false,
+    privacyName: '用户隐私保护指引'
   },
 
   async onLoad(query) {
     const dialect = (query && query.dialect) || store.getState().selectedDialect || 'north';
     if (!store.isDialectUnlocked(dialect)) {
       wx.showToast({ title: '请先开通完整版', icon: 'none' });
-      setTimeout(() => wx.navigateTo({ url: '/pages/contact/index?from=practice-gate' }), 300);
+      setTimeout(() => wx.navigateTo({ url: '/pages/landing/index' }), 300);
       return;
     }
 
@@ -77,7 +85,7 @@ Page(attachShare({
     const guidedSegments = prepareGuidedSegments(context.item);
     this.setData({
       dialect,
-      dialectLabel: dialect === 'south' ? '南越' : '北越',
+      dialectLabel: store.getDialectLabel(dialect),
       item: context.item,
       lastScore: context.previous ? context.previous.total : 0,
       progressPercent: frame.progressPercent,
@@ -187,12 +195,26 @@ Page(attachShare({
     this.recordAudio.play();
   },
 
-  ensureRecordPermission(callback) {
-    wx.authorize({
-      scope: 'scope.record',
-      success: callback,
-      fail: () => wx.showToast({ title: '请先授权录音权限', icon: 'none' })
-    });
+  async ensureRecordPermission(callback) {
+    const allowed = await requestRecordPermission(this);
+    if (allowed) {
+      callback();
+      return;
+    }
+    this.recordTouchActive = false;
+    this.setData({ recordingHint: '请先开启麦克风权限，再长按录音' });
+  },
+
+  agreePrivacyAuthorization() {
+    agreePrivacyAuthorization(this);
+  },
+
+  rejectPrivacyAuthorization() {
+    rejectPrivacyAuthorization(this);
+  },
+
+  openPrivacyContract() {
+    openPrivacyContract();
   },
 
   animateRecordingBars() {

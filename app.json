@@ -21,6 +21,12 @@
     "backgroundColor": "#F8FAF8",
     "backgroundTextStyle": "light"
   },
+  "permission": {
+    "scope.record": {
+      "desc": "用于录制跟读音频并生成发音反馈"
+    }
+  },
+  "__usePrivacyCheck__": true,
   "tabBar": {
     "custom": true,
     "color": "#8BA099",

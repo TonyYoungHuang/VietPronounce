@@ -26,7 +26,6 @@
         <view class="{{product.unlocked ? 'badge-success' : 'badge-warn'}}">{{product.unlocked ? '已激活' : '待激活'}}</view>
       </view>
       <button class="btn-primary mt-32" wx:if="{{!product.unlocked}}" bindtap="goRedeem">输入激活码</button>
-      <button class="btn-secondary mt-24" bindtap="goContact">课程顾问</button>
     </view>
 
     <view class="section-head profile-section-head">

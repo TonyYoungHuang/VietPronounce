@@ -6,6 +6,12 @@ const { validateRecordingQuality } = require('../../utils/audio-quality');
 const { prepareGuidedSegments } = require('../../utils/content-audio');
 const { ensureServiceReadyForScoring } = require('../../utils/startup-check');
 const { getOfflineNotice } = require('../../utils/network-status');
+const {
+  agreePrivacyAuthorization,
+  openPrivacyContract,
+  rejectPrivacyAuthorization,
+  requestRecordPermission
+} = require('../../utils/record-permission');
 const { attachShare } = require('../../utils/share');
 
 Page(attachShare({
@@ -27,7 +33,9 @@ Page(attachShare({
     preflightText: '找一个安静环境，手机距离嘴部约 15-20 厘米。',
     countdown: 0,
     volumeBars: [18, 30, 22, 36, 24],
-    recordingHint: '按住录音，松开结束'
+    recordingHint: '按住录音，松开结束',
+    privacyVisible: false,
+    privacyName: '用户隐私保护指引'
   },
 
   async onLoad(query) {
@@ -133,8 +141,26 @@ Page(attachShare({
     this.audio.play();
   },
 
-  ensureRecordPermission(callback) {
-    wx.authorize({ scope: 'scope.record', success: callback, fail: () => wx.showToast({ title: '请先授权麦克风', icon: 'none' }) });
+  async ensureRecordPermission(callback) {
+    const allowed = await requestRecordPermission(this);
+    if (allowed) {
+      callback();
+      return;
+    }
+    this.recordTouchActive = false;
+    this.setData({ recordingHint: '请先开启麦克风权限，再长按录音' });
+  },
+
+  agreePrivacyAuthorization() {
+    agreePrivacyAuthorization(this);
+  },
+
+  rejectPrivacyAuthorization() {
+    rejectPrivacyAuthorization(this);
+  },
+
+  openPrivacyContract() {
+    openPrivacyContract();
   },
 
   animateRecordingBars() {
@@ -302,7 +328,7 @@ Page(attachShare({
   },
 
   closePage() {
-    wx.navigateBack({ fail: () => wx.redirectTo({ url: '/pages/dialect/index' }) });
+    wx.navigateBack({ fail: () => wx.redirectTo({ url: '/pages/landing/index' }) });
   },
 
   stopRecordingIfNeeded() {

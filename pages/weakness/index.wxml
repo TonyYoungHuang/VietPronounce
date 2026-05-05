@@ -11,7 +11,7 @@
     <view class="weakness-hero">
       <view class="hero-display">课程与<br />薄弱项</view>
       <view class="body-copy">当前体系：{{dialectLabel}}。先看问题类型，再进入具体句子复练。</view>
-      <button class="btn-secondary weakness-levels" bindtap="goLevels">查看完整课程</button>
+      <button class="btn-secondary weakness-levels" bindtap="goLevels">看课程表</button>
     </view>
 
     <view class="surface-card weakness-lock" wx:if="{{!unlocked}}">

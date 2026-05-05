@@ -30,7 +30,7 @@
         <view class="warm-badge page-home__course-badge">{{unlocked ? '正在学习' : '免费试练'}}</view>
       </view>
       <view class="page-home__course-body">
-        <view class="page-home__course-kicker">{{selectedDialect === 'south' ? 'VIETNAMESE (SOUTH)' : 'VIETNAMESE (NORTH)'}}</view>
+        <view class="page-home__course-kicker">{{courseKicker}}</view>
         <view class="page-home__course-title">{{currentCourseTitle}}</view>
         <view class="page-home__course-meta">
           <view class="learner-stack">
@@ -45,8 +45,8 @@
     </view>
 
     <view class="section-head page-home__section-head">
-      <view class="section-title">推荐单元</view>
-      <view class="section-link" bindtap="goLevels">查看全部</view>
+      <view class="section-title">今天先练这些</view>
+      <view class="section-link" bindtap="goLevels">{{unlocked ? '课程表' : '去开通'}}</view>
     </view>
 
     <view class="page-home__tile-list">

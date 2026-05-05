@@ -8,7 +8,7 @@ function friendlyRedeemError(error) {
   if (message.includes('无效') || message.includes('不存在')) return '激活码无效，请检查大小写和连接符。';
   if (message.includes('已经开通')) return '当前学习档案已经开通完整课程。';
   if (message.includes('请输入')) return message;
-  return '暂时无法完成开通，请稍后重试或联系课程顾问。';
+  return '暂时无法完成开通，请稍后重试。';
 }
 
 Page(attachShare({
@@ -85,9 +85,5 @@ Page(attachShare({
 
   goProfile() {
     wx.switchTab({ url: '/pages/profile/index' });
-  },
-
-  goContact() {
-    wx.navigateTo({ url: '/pages/contact/index?from=redeem' });
   }
 }, { path: '/pages/landing/index?from=share' }));

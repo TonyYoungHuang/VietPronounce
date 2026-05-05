@@ -4,7 +4,7 @@ const { attachShare } = require('../../utils/share');
 Page(attachShare({
   data: {
     trial: null,
-    dialectLabel: '北越',
+    dialectLabel: '亚洲语种',
     moodTitle: '',
     moodSub: '',
     issueTips: [],
@@ -16,7 +16,7 @@ Page(attachShare({
   onShow() {
     const trial = store.getTrialResult();
     if (!trial || !trial.result) return;
-    const dialectLabel = trial.dialect === 'south' ? '南越' : '北越';
+    const dialectLabel = store.getDialectLabel(trial.dialect);
     const segments = (trial.result.segments || []).map((segment, index) => ({
       text: segment.text,
       tip: segment.tip,
@@ -57,10 +57,6 @@ Page(attachShare({
     if (!this.recordAudio) this.recordAudio = wx.createInnerAudioContext();
     this.recordAudio.src = this.data.trial.recordAudio;
     this.recordAudio.play();
-  },
-
-  goContact() {
-    wx.navigateTo({ url: '/pages/contact/index?from=trial-result' });
   },
 
   goRedeem() {

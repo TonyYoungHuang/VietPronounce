@@ -16,24 +16,24 @@ function buildTiles(options) {
         id: 'pronunciation',
         action: 'trial',
         tone: 'warm',
-        title: '发音纠正',
-        subtitle: '先录一条，马上看到完整度、准确度与流利度',
+        title: '先试一条',
+        subtitle: '选好语种后，先听范读，再录音看看反馈',
         icon: 'voice'
       },
       {
-        id: 'reading',
-        action: 'contact',
+        id: 'activate',
+        action: 'redeem',
         tone: 'green',
-        title: '短文阅读',
-        subtitle: '了解课程内容、开通方式和兑换码流程',
+        title: '输入激活码',
+        subtitle: '购买后把激活码填进去，就能开通对应语种',
         icon: 'book'
       },
       {
-        id: 'culture',
-        action: 'profile',
+        id: 'language',
+        action: 'landing',
         tone: 'forest',
-        title: '文化浸润',
-        subtitle: '输入激活码即可开通完整课程，继续保存练习进度',
+        title: '换个语种试试',
+        subtitle: '泰语、印尼语、印地语等都可以先免费试练',
         icon: 'temple'
       }
     ];
@@ -44,24 +44,24 @@ function buildTiles(options) {
       id: 'pronunciation',
       action: 'continue',
       tone: 'warm',
-      title: '发音纠正',
-      subtitle: continueTarget ? `继续练习 ${continueTarget.text}` : '掌握六个核心声调的微妙差别',
+      title: '接着上次练',
+      subtitle: continueTarget ? `继续练 ${continueTarget.text}` : '从上次停下的地方继续',
       icon: 'voice'
     },
     {
       id: 'reading',
       action: 'levels',
       tone: 'green',
-      title: '短文阅读',
-      subtitle: '阅读关于河内街头美食的故事',
+      title: '看看课程表',
+      subtitle: '按等级进入课程，一节一节往下练',
       icon: 'book'
     },
     {
       id: 'culture',
       action: 'weakness',
       tone: 'forest',
-      title: '文化浸润',
-      subtitle: weakCount ? `已有 ${weakCount} 个薄弱项等待复练` : '探索越南传统节日与习俗',
+      title: '集中补弱项',
+      subtitle: weakCount ? `还有 ${weakCount} 个地方值得再练` : '练过的内容会在这里整理出来',
       icon: 'temple'
     }
   ];
@@ -82,6 +82,7 @@ Page(attachShare({
     outstandingCount: 0,
     currentCourseTitle: '河内方言与基础',
     currentCourseSubtitle: '掌握越南语的声调、音节和日常短句。',
+    courseKicker: 'ASIAN LANGUAGE',
     courseButtonText: '继续课程',
     tiles: []
   },
@@ -155,6 +156,7 @@ Page(attachShare({
       outstandingCount: Math.max(totalItems - totalPassed, 0),
       currentCourseTitle: currentLevel ? currentLevel.name : `${languageInfo.name}发音入门`,
       currentCourseSubtitle: currentLevel ? currentLevel.subtitle : languageInfo.description,
+      courseKicker: String(languageInfo.englishName || languageInfo.name || 'Asian Language').toUpperCase(),
       courseButtonText: unlocked ? '继续课程' : '免费试练',
       tiles: buildTiles({ unlocked, continueTarget, weakCount: weakItems.length })
     });
@@ -162,7 +164,7 @@ Page(attachShare({
 
   goContinue() {
     if (!this.data.unlocked) {
-      wx.navigateTo({ url: '/pages/dialect/index' });
+      wx.navigateTo({ url: `/pages/trial/index?dialect=${this.data.selectedDialect}&mode=trial` });
       return;
     }
     if (!this.data.continueTarget) {
@@ -174,7 +176,7 @@ Page(attachShare({
 
   goLevels() {
     if (!this.data.unlocked) {
-      wx.navigateTo({ url: '/pages/contact/index?from=home' });
+      wx.navigateTo({ url: '/pages/landing/index' });
       return;
     }
     wx.navigateTo({ url: '/pages/levels/index' });
@@ -185,8 +187,9 @@ Page(attachShare({
     if (action === 'continue') return this.goContinue();
     if (action === 'levels') return this.goLevels();
     if (action === 'weakness') return wx.switchTab({ url: '/pages/weakness/index' });
-    if (action === 'trial') return wx.navigateTo({ url: '/pages/dialect/index' });
-    if (action === 'contact') return wx.navigateTo({ url: '/pages/contact/index?from=home' });
+    if (action === 'trial') return wx.navigateTo({ url: `/pages/trial/index?dialect=${this.data.selectedDialect}&mode=trial` });
+    if (action === 'redeem') return wx.navigateTo({ url: '/pages/redeem/index' });
+    if (action === 'landing') return wx.navigateTo({ url: '/pages/landing/index' });
     if (action === 'profile') return wx.switchTab({ url: '/pages/profile/index' });
   },
 
@@ -195,6 +198,6 @@ Page(attachShare({
   },
 
   goDialect() {
-    wx.navigateTo({ url: '/pages/dialect/index' });
+    wx.navigateTo({ url: '/pages/landing/index' });
   }
 }, { path: '/pages/landing/index?from=share' }));

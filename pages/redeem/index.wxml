@@ -3,7 +3,6 @@
     <view class="topbar-action topbar-action--back" bindtap="goBack">‹</view>
     <view class="topbar-spacer"></view>
     <view class="redeem-top-actions">
-      <view class="topbar-action" bindtap="goContact">?</view>
       <view class="avatar-shell" bindtap="goProfile">
         <view class="avatar-shell__core">V</view>
       </view>

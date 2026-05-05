@@ -55,6 +55,74 @@ image {
   display: block;
 }
 
+.privacy-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 44rpx;
+  background: rgba(25, 28, 27, 0.46);
+  backdrop-filter: blur(8px);
+}
+
+.privacy-dialog {
+  width: 100%;
+  max-width: 650rpx;
+  padding: 42rpx 36rpx 34rpx;
+  border-radius: 36rpx;
+  background: #ffffff;
+  box-shadow: 0 30rpx 90rpx rgba(0, 0, 0, 0.18);
+}
+
+.privacy-dialog__title {
+  color: #191c1b;
+  font-size: 34rpx;
+  font-weight: 900;
+  text-align: center;
+}
+
+.privacy-dialog__copy {
+  margin-top: 22rpx;
+  color: #3e4942;
+  font-size: 27rpx;
+  line-height: 1.65;
+}
+
+.privacy-dialog__link {
+  color: #006b47;
+  font-weight: 900;
+}
+
+.privacy-dialog__actions {
+  display: flex;
+  gap: 18rpx;
+  margin-top: 34rpx;
+}
+
+.privacy-dialog__button {
+  flex: 1;
+  min-height: 82rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  font-weight: 900;
+}
+
+.privacy-dialog__button--ghost {
+  color: #191c1b;
+  background: #f2f4f2;
+}
+
+.privacy-dialog__button--primary {
+  color: #ffffff;
+  background: #00875a;
+  box-shadow: 0 18rpx 40rpx rgba(0, 107, 71, 0.18);
+}
+
 .sanctuary-page {
   min-height: 100vh;
   background:

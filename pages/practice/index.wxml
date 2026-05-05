@@ -104,3 +104,17 @@
     </view>
   </view>
 </view>
+
+<view class="privacy-layer" wx:if="{{privacyVisible}}">
+  <view class="privacy-dialog">
+    <view class="privacy-dialog__title">录音前需要确认隐私授权</view>
+    <view class="privacy-dialog__copy">
+      为了录制你的跟读音频并生成发音反馈，需要使用麦克风。请先阅读并同意
+      <text class="privacy-dialog__link" bindtap="openPrivacyContract">《{{privacyName}}》</text>。
+    </view>
+    <view class="privacy-dialog__actions">
+      <button class="privacy-dialog__button privacy-dialog__button--ghost" bindtap="rejectPrivacyAuthorization">暂不使用</button>
+      <button class="privacy-dialog__button privacy-dialog__button--primary" open-type="agreePrivacyAuthorization" bindagreeprivacyauthorization="agreePrivacyAuthorization">同意并继续</button>
+    </view>
+  </view>
+</view>
